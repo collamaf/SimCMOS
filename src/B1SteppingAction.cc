@@ -72,7 +72,9 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	// ########################################
 	// ###################### ENTERING CMOS
 	
-	if((NextVol && ThisVol->GetName()=="Resin" && NextVol->GetName()=="CMOS")|| (NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world)
+//	if((NextVol && ThisVol->GetName()=="Resin" && NextVol->GetName()=="CMOS")|| (NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world) before 2018.05.29
+		if((NextVol && ThisVol->GetName()=="DummyCMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world) after 2018.05.29
+
 		if (fEventAction->GetStoreTrackIDCmos()==step->GetTrack()->GetTrackID()) { //if I already saw this track exiting the source...
 			fEventAction->AddPassCounterCmos(1);  //increase the counter
 			

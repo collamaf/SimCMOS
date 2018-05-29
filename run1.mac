@@ -17,7 +17,9 @@
 
 /tracking/verbose 0
 #
-/run/beamOn 1000000
+#/run/beamOn 100000
+#/run/beamOn 1542390 #for 3000 frames
+/run/beamOn 1401600 #for 3000 frames with todays Sr source acitivity of 2336
 #/run/beamOn 1000000
 #/run/beamOn 10000000
 #000

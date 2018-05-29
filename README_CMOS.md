@@ -26,7 +26,7 @@ Sensor Choice:
 ## GEOMETRY
 - Extended Sr Source ending at Z=0
 - Cu collimator on top of Sr source (toggleble)
-- CMOS Detector starting at Z offset (Z distance is from source surface and possible resin (in case of sensor 1 or up to the sensor in case of sensor 2, even if with filter)
+- CMOS Detector starting at Z offset (Z distance is from source surface to possible resin in case of sensor 1, or up to the sensor in case of sensor 2, even if with filter)
 - Sensor resin filter in contact with CMOS (towards source)
 - Dummy volume for scoring purposes between source (or if presente CU Collimator) and World to score what exits the primary generation
 - "infinite" carrier volume behind CMOS to simulate mechanical support
@@ -107,6 +107,13 @@ B1->SetLineColor(kRed)
 B1->Draw("InCmosEnY","","same")
 ````
 
+da CMOS/CodiceCMOS
+
+Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fil1_TBR10_ExtSr_115_Frame100.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -frameSize 488x648 -t 7
+
+
+
+
 ## CHANGELOG
 2017.12.1 by collamaf
 - Try to fix problem of primary particles double counting by putting a check in Stepping Action. Seems to reduce by about ~9% the number of exiting particles (NoCudZ2 test)
@@ -124,7 +131,7 @@ B1->Draw("InCmosEnY","","same")
 
 2018.01.30 by collamaf
 - Quite deep reorganization of output root file, cleaned a little in ordering and name (and updated readme)
-- Changed "ExtY" to "ExtY" in output file naming
+- Changed "DOTA" to "ExtY" in output file naming
 
 2018.04.23 by collamaf
 - Now resin is always present in front of CMOS, if flag not selected made of air (useful for scoring)
@@ -137,9 +144,21 @@ B1->Draw("InCmosEnY","","same")
 - first implementation of storage of time of interection. Still not clear which time to save...
 - Introduced possibility to simulate bare SiPm (assumed to be a particular version of CMOS detector): SensorChoice=3
 
+2018.05.29 by collamaf
+- Added dummy volume in front of CMOS (towards source) to score what enters it after some problem in case of space between the CMOS and the filter (like in sensor 2-115)
+- Now in SteppingAction to score what enters CMOS we use the new Dummy volume
+- Modified size of resin in case of sensor 2 (is larger than the active area), according to datasheet
+- Fixed error in positioning of filter in case of sensor 1 (was after cmos)
+- Fixed why filter in Sensor2 was not working.. the unit for density=4 was missing, chissa come interpretava lui...
+
+
 
 
 ## TO DO's
+
+- aggiungere anche qui le nuove sorgenti messe in SimDaVinci?
+
+
 
 - Manage other sources (gamma)
 

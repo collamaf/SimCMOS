@@ -2,7 +2,7 @@
 // This class has been automatically generated on
 // Mon May  7 14:31:34 2018 by ROOT version 6.11/02
 // from TTree B1/physics
-// found on file: CMOSmcX0_Z175_NOCuD_Fil0_TBR10_ExtSr_60035.root
+// found on file: PtermcX0_Z175_NOCuD_Fil0_TBR10_ExtSr_60035.root
 //////////////////////////////////////////////////////////
 
 #ifndef AnaSiPm_h
@@ -27,17 +27,17 @@ public :
    // Declaration of leaf types
    Double_t        Eabs;
    vector<double>  *EabsComp;
-   Double_t        PreCmosTrackN;
-   vector<double>  *PreCmosPart;
-   vector<double>  *PreCmosEn;
-   Double_t        InCmosTrackN;
-   vector<double>  *InCmosPart;
-   vector<double>  *InCmosEn;
-   vector<double>  *InCmosEnPrim;
-   vector<float>   *InCmosTime;
-   vector<double>  *InCmosX;
-   vector<double>  *InCmosY;
-   vector<double>  *InCmosZ;
+   Double_t        PrePterTrackN;
+   vector<double>  *PrePterPart;
+   vector<double>  *PrePterEn;
+   Double_t        InPterTrackN;
+   vector<double>  *InPterPart;
+   vector<double>  *InPterEn;
+   vector<double>  *InPterEnPrim;
+   vector<float>   *InPterTime;
+   vector<double>  *InPterX;
+   vector<double>  *InPterY;
+   vector<double>  *InPterZ;
    vector<double>  *PixelID;
    vector<double>  *PixXPos;
    vector<double>  *PixYPos;
@@ -54,17 +54,17 @@ public :
    // List of branches
    TBranch        *b_Eabs;   //!
    TBranch        *b_EabsComp;   //!
-   TBranch        *b_PreCmosTrackN;   //!
-   TBranch        *b_PreCmosPart;   //!
-   TBranch        *b_PreCmosEn;   //!
-   TBranch        *b_InCmosTrackN;   //!
-   TBranch        *b_InCmosPart;   //!
-   TBranch        *b_InCmosEn;   //!
-   TBranch        *b_InCmosEnPrim;   //!
-   TBranch        *b_InCmosTime;   //!
-   TBranch        *b_InCmosX;   //!
-   TBranch        *b_InCmosY;   //!
-   TBranch        *b_InCmosZ;   //!
+   TBranch        *b_PrePterTrackN;   //!
+   TBranch        *b_PrePterPart;   //!
+   TBranch        *b_PrePterEn;   //!
+   TBranch        *b_InPterTrackN;   //!
+   TBranch        *b_InPterPart;   //!
+   TBranch        *b_InPterEn;   //!
+   TBranch        *b_InPterEnPrim;   //!
+   TBranch        *b_InPterTime;   //!
+   TBranch        *b_InPterX;   //!
+   TBranch        *b_InPterY;   //!
+   TBranch        *b_InPterZ;   //!
    TBranch        *b_PixelID;   //!
    TBranch        *b_PixXPos;   //!
    TBranch        *b_PixYPos;   //!
@@ -145,15 +145,15 @@ void AnaSiPm::Init(TTree *tree)
 
    // Set object pointer
    EabsComp = 0;
-   PreCmosPart = 0;
-   PreCmosEn = 0;
-   InCmosPart = 0;
-   InCmosEn = 0;
-   InCmosEnPrim = 0;
-   InCmosTime = 0;
-   InCmosX = 0;
-   InCmosY = 0;
-   InCmosZ = 0;
+   PrePterPart = 0;
+   PrePterEn = 0;
+   InPterPart = 0;
+   InPterEn = 0;
+   InPterEnPrim = 0;
+   InPterTime = 0;
+   InPterX = 0;
+   InPterY = 0;
+   InPterZ = 0;
    PixelID = 0;
    PixXPos = 0;
    PixYPos = 0;
@@ -170,17 +170,17 @@ void AnaSiPm::Init(TTree *tree)
 
    fChain->SetBranchAddress("Eabs", &Eabs, &b_Eabs);
    fChain->SetBranchAddress("EabsComp", &EabsComp, &b_EabsComp);
-   fChain->SetBranchAddress("PreCmosTrackN", &PreCmosTrackN, &b_PreCmosTrackN);
-   fChain->SetBranchAddress("PreCmosPart", &PreCmosPart, &b_PreCmosPart);
-   fChain->SetBranchAddress("PreCmosEn", &PreCmosEn, &b_PreCmosEn);
-   fChain->SetBranchAddress("InCmosTrackN", &InCmosTrackN, &b_InCmosTrackN);
-   fChain->SetBranchAddress("InCmosPart", &InCmosPart, &b_InCmosPart);
-   fChain->SetBranchAddress("InCmosEn", &InCmosEn, &b_InCmosEn);
-   fChain->SetBranchAddress("InCmosEnPrim", &InCmosEnPrim, &b_InCmosEnPrim);
-   fChain->SetBranchAddress("InCmosTime", &InCmosTime, &b_InCmosTime);
-   fChain->SetBranchAddress("InCmosX", &InCmosX, &b_InCmosX);
-   fChain->SetBranchAddress("InCmosY", &InCmosY, &b_InCmosY);
-   fChain->SetBranchAddress("InCmosZ", &InCmosZ, &b_InCmosZ);
+   fChain->SetBranchAddress("PrePterTrackN", &PrePterTrackN, &b_PrePterTrackN);
+   fChain->SetBranchAddress("PrePterPart", &PrePterPart, &b_PrePterPart);
+   fChain->SetBranchAddress("PrePterEn", &PrePterEn, &b_PrePterEn);
+   fChain->SetBranchAddress("InPterTrackN", &InPterTrackN, &b_InPterTrackN);
+   fChain->SetBranchAddress("InPterPart", &InPterPart, &b_InPterPart);
+   fChain->SetBranchAddress("InPterEn", &InPterEn, &b_InPterEn);
+   fChain->SetBranchAddress("InPterEnPrim", &InPterEnPrim, &b_InPterEnPrim);
+   fChain->SetBranchAddress("InPterTime", &InPterTime, &b_InPterTime);
+   fChain->SetBranchAddress("InPterX", &InPterX, &b_InPterX);
+   fChain->SetBranchAddress("InPterY", &InPterY, &b_InPterY);
+   fChain->SetBranchAddress("InPterZ", &InPterZ, &b_InPterZ);
    fChain->SetBranchAddress("PixelID", &PixelID, &b_PixelID);
    fChain->SetBranchAddress("PixXPos", &PixXPos, &b_PixXPos);
    fChain->SetBranchAddress("PixYPos", &PixYPos, &b_PixYPos);

@@ -119,7 +119,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	
 	
 	density = 4.000*g/cm3; //4 for MT9V011, 2.43 for MT9V115
-	if (fSensorChoice==2) density=2.43;
+	if (fSensorChoice==2) density=2.43*g/cm3; //was missing the unit!!!!!
 	G4Material* Resin = new G4Material (name="Resin", density, ncomponents=3);
 	Resin->AddElement (elH, natoms=30);
 	Resin->AddElement (elC, natoms=20);
@@ -162,6 +162,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4Material* ABSbehind_mat = ABS;
 	G4Material* SourceSR_mat = nist->FindOrBuildMaterial("MyAlu"); //G4_Al
 	G4Material* Resin_mat = Resin;
+	//	Resin_mat=nist->FindOrBuildMaterial("G4_Pb");
 	G4Material* shapeCo_mat = nist->FindOrBuildMaterial("G4_Cu");
 	G4Material* shapeDummy_mat = nist->FindOrBuildMaterial("G4_AIR");
 	G4Material* pix_mat = nist->FindOrBuildMaterial("G4_Si");
@@ -220,7 +221,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double DPhiCo = 360.*deg;
 	//###
 	
-	//### Dummy
+	//### Dummy in front of Source
 	G4double RminDummy = 0;
 	G4double RmaxDummy = 18.*mm;
 	if (fCuDiam>=0) RmaxDummy =RmaxCo;
@@ -239,24 +240,23 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double gapY =0.01*um;
 	G4int noX = 640;
 	G4int noY = 480;
-	G4double DistFilterCmos2=41*um; //distance between filter surface and cmos in sensor 2 (was 441 wtf)
+	G4double DistFilterCmos=41*um; //distance between filter surface and cmos in sensor 2 (was 441 wtf)
 	if (fSensorChoice==2) {
 		PixelSize=1.75*um;
-		PixelThickness=2.5*um;
+		PixelThickness=4.5*um; //was 2.5 but in Stefano's thesis is 4.5, we tried also 13 but seems toomuch (2018.05.29)
 		noX=648;
 		noY=488;
 	}
 	if (fSensorChoice==3) {
 		PixelSize=35*um;
-		PixelThickness=2.5*um;
+		PixelThickness=4.5*um;
 		noX=137;
 		noY=137;
 		gapX=8.75*um;
 		gapY=8.75*um;
-		
 	}
-
-
+	//###
+	
 	//in case of ScalFactor...
 	G4double pixX =PixelSize*ScaleFactor;
 	G4double pixY =PixelSize*ScaleFactor;
@@ -272,6 +272,57 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double carrier_sizeY = 70.*mm;
 	G4double carrier_sizeZ  = 2.*mm;
 	//###
+	
+	//### Absorber in front of Source
+	if (fCuDiam>0) {
+		zDummy=DzDummy*0.5+DzCo;
+	} else {
+		zDummy=DzDummy*0.5;
+	}
+	//###
+	
+	G4int copyNo=0;
+	//### Compute CMOS global dimensions
+	G4double Cmos_sizeX = (pixX+gapX)*noX-gapX;
+	G4double Cmos_sizeY = (pixY+gapY)*noY-gapY;
+	G4double Cmos_sizeZ  = pixZ;
+	
+	G4double cmos_ZScan=fZValue;
+	
+	//### Carrier behind CMOS
+	G4double DummyCmos_sizeX= Cmos_sizeX;
+	G4double DummyCmos_sizeY= Cmos_sizeY;
+	G4double DummyCmos_sizeZ= 0.001*mm;
+	//###
+	
+	
+	//	if (fSensorChoice==2) fFilterFlag=1; //Sensor 2 is always with filter
+	if (fSensorChoice==3) fFilterFlag=0; //Sensor 3 is always with filter
+																			 //	if (fFilterFlag==1) {
+	Resin_sizeX = noX*PixelSize*ScaleFactor;
+	Resin_sizeY = noY*PixelSize*ScaleFactor;
+	
+	if(fSensorChoice==1) {
+		Resin_sizeZ  = 0.520*mm;
+		//		Z_resin= fZValue - Resin_sizeZ*0.5- DummyCmos_sizeZ;
+		DistFilterCmos=0;
+		Z_resin= fZValue-DistFilterCmos + Resin_sizeZ*0.5- DummyCmos_sizeZ;
+		cmos_ZScan=fZValue + Resin_sizeZ + Cmos_sizeZ*0.5; //modified on 2017.11.21 by collamaf - Z distance does not take into account Cu thickness! is always from source top to possible resin
+	} else if (fSensorChoice==2) {
+		Resin_sizeX=2.69*mm;
+		Resin_sizeY=2.69*mm;
+		Resin_sizeZ  = 0.400*mm;
+		Z_resin= fZValue-DistFilterCmos - Resin_sizeZ*0.5- DummyCmos_sizeZ;
+		cmos_ZScan=fZValue + Cmos_sizeZ*0.5;
+	}
+	
+	/*
+	 if(fSensorChoice==1) {
+	 cmos_ZScan=fZValue + Resin_sizeZ + Cmos_sizeZ*0.5; //modified on 2017.11.21 by collamaf - Z distance does not take into account Cu thickness! is always from source top to possible resin
+	 } else if (fSensorChoice==2) {
+	 cmos_ZScan=fZValue + Cmos_sizeZ*0.5;
+	 }
+	 */
 	
 	//##########################
 	//###################################################
@@ -490,11 +541,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//Dummy volume for scoring what exits source
 	//##########################
 	
-	if (fCuDiam>0) {
-		zDummy=DzDummy*0.5+DzCo;
-	} else {
-		zDummy=DzDummy*0.5;
-	}
+	
 	G4ThreeVector posDummy = G4ThreeVector(0, 0, zDummy);
 	
 	G4cout<<"GEOMETRY DEBUG - Z thickness of solidShapeDummy= "<<DzDummy/mm<<", Z pos= "<<zDummy<<G4endl;
@@ -533,72 +580,10 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	
 	
 	//###################################################
-	//Electron Filter Resin
-	//##########################
-	if (fSensorChoice==2) fFilterFlag=1; //Sensor 2 is always with filter
-	if (fSensorChoice==3) fFilterFlag=0; //Sensor 3 is always with filter
-																			 //	if (fFilterFlag==1) {
-	Resin_sizeX = noX*PixelSize*ScaleFactor;
-	Resin_sizeY = noY*PixelSize*ScaleFactor;
-	
-	if(fSensorChoice==1) {
-		Resin_sizeZ  = 0.520*mm;
-		Z_resin= fZValue + Resin_sizeZ*0.5;
-	} else if (fSensorChoice==2) {
-		Resin_sizeZ  = 0.400*mm;
-		Z_resin= fZValue-DistFilterCmos2 - Resin_sizeZ*0.5;
-	}
-	if (fFilterFlag==0) { //if I do not want the filter, place it but make it thin and empty
-		Resin_mat=world_mat;
-		Resin_sizeZ=0.1*mm;
-		Z_resin= fZValue+  Resin_sizeZ*0.5;
-	}
-	G4ThreeVector posFilter = G4ThreeVector(fX0Scan, 0, Z_resin);
-	
-	G4cout<<"GEOMETRY DEBUG - Z thickness of solidResin= "<<Resin_sizeZ/mm<<", Z pos= "<<Z_resin/mm<<G4endl;
-	
-	G4Box* solidResin =
-	new G4Box("Resin",                       //its name
-						0.5*Resin_sizeX,0.5*Resin_sizeY,0.5*Resin_sizeZ);     //its size
-	
-	G4LogicalVolume* logicResin =
-	new G4LogicalVolume(solidResin,          //its solid
-											Resin_mat,           //its material
-											"Resin");            //its name
-	
-	new G4PVPlacement(0,                     //no rotation
-										posFilter,
-										logicResin,            //its logical volume
-										"Resin",               //its name
-										logicWorld,            //its mother  volume
-										false,                 //no boolean operation
-										0,                     //copy number
-										checkOverlaps);        //overlaps checking
-																					 //	G4Region* filtro = new G4Region("ResinReg");
-	logicResin->SetRegion(filtro);
-	filtro->AddRootLogicalVolume(logicResin);
-	
-	//	}
-	
-	//################################################### END OF RESIN FILTER
-	
-	//###################################################
-	// CMOS Si sensoor + PIXELS
+	// CMOS Si sensor + PIXELS
 	//##########################
 	
-	G4int copyNo=0;
-	//Compute CMOS global dimensions
-	G4double Cmos_sizeX = (pixX+gapX)*noX-gapX;
-	G4double Cmos_sizeY = (pixY+gapY)*noY-gapY;
-	G4double Cmos_sizeZ  = pixZ;
 	
-	G4double cmos_ZScan=fZValue;
-	
-	if(fSensorChoice==1) {
-		cmos_ZScan=fZValue + Resin_sizeZ + Cmos_sizeZ*0.5; //modified on 2017.11.21 by collamaf - Z distance does not take into account Cu thickness! is always from source top to possible resin
-	} else if (fSensorChoice==2) {
-		cmos_ZScan=fZValue + Cmos_sizeZ*0.5;
-	}
 	G4ThreeVector pos2 = G4ThreeVector(fX0Scan, 0, cmos_ZScan);
 	
 	G4cout<<"GEOMETRY DEBUG - Z thickness of solidCmos= "<<Cmos_sizeZ/mm<<", Z pos= "<<cmos_ZScan/mm<<G4endl;
@@ -632,7 +617,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	cmosreg->AddRootLogicalVolume(logicPix);
 	
 	G4cout<<"GEOMETRY DEBUG - I will place "<<noY* noX<<" pixels"<<G4endl;
-
+	
 	
 	//placement of the pixel in CMOS - until 2018-01-18 was inverted: was before x and than y, but now is consistent with following analysis
 	for (G4int iy = 1; iy <= noY ; iy++){ //up to 488
@@ -666,6 +651,38 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	
 	
 	//###################################################
+	// DUMMY BEFORE CMOS
+	//##########################
+	
+	
+	G4ThreeVector posDummyCmos = G4ThreeVector(fX0Scan, 0, cmos_ZScan-Cmos_sizeZ/2.-DummyCmos_sizeZ/2.);
+	
+	G4cout<<"GEOMETRY DEBUG - Z thickness of DummyCmos= "<<DummyCmos_sizeZ/mm<<", Z pos= "<<cmos_ZScan-Cmos_sizeZ/2.-DummyCmos_sizeZ/2./mm<<G4endl;
+	//	G4cout<<"GEOMETRY DEBUG - CmosSizeX= "<<Cmos_sizeX/mm<<", CmosSizeY= "<<Cmos_sizeY/mm<<", CmosSizeZ= "<<pixZ/mm<<G4endl;
+	
+	//DUMMY CMOS
+	G4Box* solidDummyCmos =
+	new G4Box("DummyCMOS",                       //its name
+						0.5*DummyCmos_sizeX,0.5*DummyCmos_sizeY,0.5*DummyCmos_sizeZ);     //its size
+	
+	G4LogicalVolume* logicDummyCmos =
+	new G4LogicalVolume(solidDummyCmos,          //its solid
+											world_mat,           //its material
+											"DummyCMOS");            //its name
+	
+	new G4PVPlacement(0,                     //no rotation
+										posDummyCmos,       //at (0,0,0)
+										logicDummyCmos,            //its logical volume
+										"DummyCMOS",               //its name
+										logicWorld,            //its mother  volume
+										false,                 //no boolean operation
+										0,                     //copy number
+										checkOverlaps);        //overlaps checking
+	
+	//################################################### END OF DUMMMY BEFORE CMOS
+	
+	
+	//###################################################
 	// CMOS-carrier PVC
 	//##########################
 	G4double carrier_Z=cmos_ZScan +0.5*carrier_sizeZ + Cmos_sizeZ;
@@ -696,6 +713,48 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	carrierreg->AddRootLogicalVolume(logicCarrier);
 	
 	//################################################### END OF CMOS carrier
+	
+	
+	
+	//###################################################
+	//Electron Filter Resin
+	//##########################
+	
+	/*
+	 if (fFilterFlag==0) { //if I do not want the filter, place it but make it thin and empty
+	 Resin_mat=world_mat;
+	 Resin_sizeZ=0.1*mm;
+	 Z_resin= fZValue-  Resin_sizeZ*0.5;
+	 }
+	 */
+	G4ThreeVector posFilter = G4ThreeVector(fX0Scan, 0, Z_resin);
+	
+	G4cout<<"GEOMETRY DEBUG - Z thickness of solidResin= "<<Resin_sizeZ/mm<<", Z pos= "<<Z_resin/mm<<G4endl;
+	
+	G4Box* solidResin =
+	new G4Box("Resin",                       //its name
+						0.5*Resin_sizeX,0.5*Resin_sizeY,0.5*Resin_sizeZ);     //its size
+	
+	G4LogicalVolume* logicResin =
+	new G4LogicalVolume(solidResin,          //its solid
+											Resin_mat,           //its material
+											"Resin");            //its name
+	
+	if (fFilterFlag) new G4PVPlacement(0,                     //no rotation
+																		 posFilter,
+																		 logicResin,            //its logical volume
+																		 "Resin",               //its name
+																		 logicWorld,            //its mother  volume
+																		 false,                 //no boolean operation
+																		 0,                     //copy number
+																		 checkOverlaps);        //overlaps checking
+																														//	G4Region* filtro = new G4Region("ResinReg");
+	logicResin->SetRegion(filtro);
+	filtro->AddRootLogicalVolume(logicResin);
+	
+	//	}
+	
+	//################################################### END OF RESIN FILTER
 	
 	// Set scoring volume
 	//Pixelated CMOS
