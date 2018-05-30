@@ -156,6 +156,7 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fi
 - Added new parts from SimDaVinci (StackingAction: kill neutrinos and change in primary particle storing, fileName generated in main)
 - Added as argument to pass material of absorber (1: Cu, 2:Al, 3:PVC)
 - Now if run in vis mode the file root ends with xxxTEST not to overwrite important ones
+- Now arguments are taken with labels, not necessary to give them all! If a macro is provided no visualization is init.. cool!
 
 
 ## TO DO's

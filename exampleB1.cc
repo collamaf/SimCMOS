@@ -58,40 +58,68 @@
 int main(int argc,char** argv)
 {
 	
-	
+	G4bool VisFlag=true;
+
 	// Detect interactive mode (if no arguments) and define UI session
 	G4UIExecutive* ui = 0;
-	if ( argc == 10 ) {  //was argc==1, 7 to see geom using input parameters, 8 once added sensorchoice
-		ui = new G4UIExecutive(argc, argv);
-	}
+
 	
 	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=5*mm,AbsorberThickness=1*mm, TBRvalue=1;
 	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1;
 	
-	//arguments list: CuZ, Zval, Filter, TBR, Source, X0, Sensor
+	G4String fileName ="";
 	
-	if ( argc >1 ) {
-		//    x0Scan=(*argv[2]-48)*mm;
-		AbsorberDiam=strtod (argv[1], NULL);
-		AbsorberThickness=strtod (argv[2], NULL);
-		AbsorberMaterial=strtod (argv[3], NULL);
-		ZValue=strtod (argv[4], NULL);
-		FilterFlag=strtod (argv[5], NULL);
-		TBRvalue=strtod (argv[6],NULL);
-		SourceChoice=strtod (argv[7], NULL);
-		x0Scan=strtod (argv[8], NULL);
-		SensorChoice=strtod(argv[9],NULL);
-		
-		G4cout<<"DEBUG Initial parameter check x0= "<<x0Scan<<G4endl;
-		G4cout<<"DEBUG Initial parameter check z= "<<ZValue<<G4endl;
-		G4cout<<"DEBUG Initial parameter check AbsorberDiam= "<<AbsorberDiam<<G4endl;
-		G4cout<<"DEBUG Initial parameter check AbsorberThickness= "<<AbsorberThickness<<G4endl;
-		G4cout<<"DEBUG Initial parameter check CuMaterial= "<<AbsorberMaterial<<G4endl;
-		G4cout<<"DEBUG Initial parameter check TBRvalue= "<<TBRvalue<<G4endl;
-		G4cout<<"DEBUG Initial parameter check FilterFlag= "<<FilterFlag<<G4endl;
-		G4cout<<"DEBUG Initial parameter check SourceChoice= "<<SourceChoice<<G4endl;
-		G4cout<<"DEBUG Initial parameter check SensorChoice= "<<SensorChoice<<G4endl;
-		
+	for(int i=1;i<argc;i++)
+		if(argv[i][0] =='-')
+		{
+			G4String option(argv[i]);
+			G4cout<<"option: "<<i<<" "<<option<<G4endl;
+			if(option.compare("-AbsD")==0)
+			{
+				AbsorberDiam=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-AbsT")==0)
+			{
+				AbsorberThickness=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-AbsMat")==0)
+			{
+				AbsorberMaterial=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-Z")==0)
+			{
+				ZValue=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-Fil")==0)
+			{
+				FilterFlag=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-TBR")==0)
+			{
+				TBRvalue=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-Source")==0)
+			{
+				SourceChoice=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-X")==0)
+			{
+				x0Scan=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-Sensor")==0)
+			{
+				SensorChoice=strtod (argv[++i], NULL);;
+			}
+			
+		}
+		else
+		{
+			fileName = argv[i]; //se ho trovato una macro (senza il "-" davanti) significa che NON voglio l'interattivo
+			VisFlag=false;
+		}
+	
+	if ( VisFlag ) {
+		ui = new G4UIExecutive(argc, argv);
 	}
 	
 	G4int SourceSelect=SourceChoice;
@@ -109,23 +137,24 @@ int main(int argc,char** argv)
 	if (AbsorberDiam>=0) FileNameCommonPart.append("_AbsDz" + std::to_string((G4int)(1000*AbsorberThickness))+"_AbsHole" + std::to_string((G4int)(100*AbsorberDiam)) +"_AbsMat" + MaterialiAssorbitore[AbsorberMaterial]);
 	else FileNameCommonPart.append("_NoAbs");
 	
-
+	FileNameCommonPart.append("_Fil" + std::to_string((G4int)FilterFlag));
+	
 	if (SourceSelect==1) FileNameCommonPart.append("_PSr");
 	if (SourceSelect==2) FileNameCommonPart.append("_ExtSr");
 	if (SourceSelect==3) FileNameCommonPart.append("_ExtY_TBR"+ std::to_string((G4int)TBRvalue));
-//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
+	//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
 	
 	if (SensorChoice==1) FileNameCommonPart.append("_011");
 	if (SensorChoice==2) FileNameCommonPart.append("_115");
 	if (SensorChoice==3) FileNameCommonPart.append("_60035");
-
-	if (argc<11) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
-
+	
+	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
+	
 	
 	FileNamePrim.append(FileNameCommonPart);
 	OutFileName.append(FileNameCommonPart);
-
-
+	
+	
 	std::ofstream primFile(FileNamePrim, std::ios::out);
 	
 	// Choose the Random engine
@@ -170,10 +199,10 @@ int main(int argc,char** argv)
 	// Process macro or start UI session
 	//
 	
-	if ( ! ui ) {
+	if ( ! VisFlag) {
 		// batch mode
 		G4String command = "/control/execute ";
-		G4String fileName = argv[10];
+		//		G4String fileName = argv[19];
 		UImanager->ApplyCommand(command+fileName);
 	}
 	else {

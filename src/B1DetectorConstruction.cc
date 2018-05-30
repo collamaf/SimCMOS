@@ -235,7 +235,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###
 	
 	//### CMOS pixel (defaults geom values are for MTV011 Sensor (1))
-	G4int ScaleFactor=10; //set to 1 for full simulation, 10 for quick view
+	G4int ScaleFactor=1; //set to 1 for full simulation, 10 for quick view
 	G4double PixelSize=5.6*um;
 	G4double PixelThickness=4.5*um;
 	G4double gapX =0.01*um;
