@@ -6,10 +6,9 @@ cd build
 cmake -DGeant4_DIR=$G4INSTALL ../
 make
 ./exampleB1
-./exampleB1 {CuDiam (<0->no Cu)} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
+./exampleB1 {CuDiam (<0->no Cu)} {CuThickness} {Cu Material 1-Cu 2-Al 3-PVC} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
 e.g.:
-./exampleB1 -5 2 0 1 2 0 1 ../run1.mac
-./exampleB1 -5 0.01 0 1 2 0 3 ../run1.mac
+./exampleB1 0 0.3 1 1.74 1 10 2 0 2 ../run1.mac 
 ```
 {all distances/sizes in mm}
 Source Choice:
@@ -151,15 +150,17 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fi
 - Fixed error in positioning of filter in case of sensor 1 (was after cmos)
 - Fixed why filter in Sensor2 was not working.. the unit for density=4 was missing, chissa come interpretava lui...
 
-
+2018.05.30 by collamaf
+- Fixed an error in the positioning of the carrier behind CMOS
+- Added as argument to pass the thickness of the absorber
+- Added new parts from SimDaVinci (StackingAction: kill neutrinos and change in primary particle storing, fileName generated in main)
+- Added as argument to pass material of absorber (1: Cu, 2:Al, 3:PVC)
+- Now if run in vis mode the file root ends with xxxTEST not to overwrite important ones
 
 
 ## TO DO's
 
-- aggiungere anche qui le nuove sorgenti messe in SimDaVinci?
-
-
-
-- Manage other sources (gamma)
+- aggiungere il gallio? (cioè solo i parametri da input, magari aspettando di fare in modo che possano essere inseriti solo quelli interessanti..)
+- correct readme regarding Root file vectors
 
 

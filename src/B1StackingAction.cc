@@ -34,6 +34,8 @@
 
 #include "G4Track.hh"
 #include "G4NeutrinoE.hh"
+#include "G4VProcess.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -52,6 +54,15 @@ G4ClassificationOfNewTrack
 B1StackingAction::ClassifyNewTrack(const G4Track* track)
 {
 	G4int debug=0;
+	
+	if (fabs(track->GetDynamicParticle() ->GetPDGcode())==12) return fKill; //kill neutrinos
+	
+	const G4VProcess* creator=track->GetCreatorProcess();
+	std::string CreatorProcname="undefined";
+	if(creator) CreatorProcname=creator->GetProcessName();
+	
+	
+	
 	if (debug) G4cout<<"CMOSDEBUG PROVA STACKING creata nuova traccia tipo= "<< track->GetDynamicParticle() ->GetPDGcode()<<", MotherIsotope Val= "<< runStackAction->GetMotherIsotope()
 	<<G4endl;
 	//keep primary particle
@@ -62,6 +73,21 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
     fEventAction->ResetPassCounterSource(); //collamaf: at each new track we reset the pass counter
 	fEventAction->ResetPassCounterCmos(); //collamaf: at each new track we reset the pass counter
 	
+	
+	if (CreatorProcname=="RadioactiveDecay" && track->GetDynamicParticle() ->GetPDGcode()<9e8) {
+		runStackAction->SetMotherIsotope(track->GetParentID()-1);
+		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
+		(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
+		(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
+		(runStackAction->GetRunPartGen()).push_back(track->GetDynamicParticle() ->GetPDGcode());
+		(runStackAction->GetRunIsotopeGen()).push_back(track->GetParentID()-1);
+		(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
+		(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
+		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
+		
+	}
+	
+#if 0
 	if (track->GetDynamicParticle() ->GetPDGcode()==11) { //if I generated an electron
 		if (debug) G4cout<<"CMOSDEBUG PROVA STACKING nuovo elettrone! en= "<< track->GetKineticEnergy()/CLHEP::keV  <<G4endl;
 		if (track->GetParentID() == 1) { //figlio di Sr
@@ -87,7 +113,7 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 			(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
 		}
 	}
-	
+#endif
 	
 	
 	return fUrgent;

@@ -37,8 +37,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1ActionInitialization::B1ActionInitialization(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, std::ofstream& file, G4double TBR/*, G4bool SrSourceFlag*/, G4int SourceSelect, G4int SensorChoice)
-  : G4VUserActionInitialization(), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fFilterFlag(FilterFlag), FilePrimaries(file), fTBR(TBR), /*fSrSourceFlag(SrSourceFlag),*/ 	fSourceSelect(SourceSelect), fSensorChoice(SensorChoice)
+B1ActionInitialization::B1ActionInitialization(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, std::ofstream& file, G4double TBR/*, G4bool SrSourceFlag*/, G4int SourceSelect, G4int SensorChoice, G4String FileName)
+  : G4VUserActionInitialization(), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fFilterFlag(FilterFlag), FilePrimaries(file), fTBR(TBR), /*fSrSourceFlag(SrSourceFlag),*/ 	fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fFileName(FileName)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -50,7 +50,7 @@ B1ActionInitialization::~B1ActionInitialization()
 
 void B1ActionInitialization::BuildForMaster() const
 {
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice);
+  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
   SetUserAction(runAction);
 }
 
@@ -61,7 +61,7 @@ void B1ActionInitialization::Build() const
 //  SetUserAction(new B1PrimaryGeneratorAction(runAction));
 	G4cout<<"PROVA Action Init "<<fX0Scan<<G4endl;
 
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice);
+  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
   SetUserAction(runAction);
   
   B1EventAction* eventAction = new B1EventAction(runAction, FilePrimaries);

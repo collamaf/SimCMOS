@@ -61,28 +61,32 @@ int main(int argc,char** argv)
 	
 	// Detect interactive mode (if no arguments) and define UI session
 	G4UIExecutive* ui = 0;
-	if ( argc == 8 ) {  //was argc==1, 7 to see geom using input parameters, 8 once added sensorchoice
+	if ( argc == 10 ) {  //was argc==1, 7 to see geom using input parameters, 8 once added sensorchoice
 		ui = new G4UIExecutive(argc, argv);
 	}
 	
-	G4double x0Scan=0, ZValue=2*mm, CuDiam=5*mm, TBRvalue=1;
-	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1;
+	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=5*mm,AbsorberThickness=1*mm, TBRvalue=1;
+	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1;
 	
 	//arguments list: CuZ, Zval, Filter, TBR, Source, X0, Sensor
 	
 	if ( argc >1 ) {
 		//    x0Scan=(*argv[2]-48)*mm;
-		CuDiam=strtod (argv[1], NULL);
-		ZValue=strtod (argv[2], NULL);
-		FilterFlag=strtod (argv[3], NULL);
-		TBRvalue=strtod (argv[4],NULL);
-		SourceChoice=strtod (argv[5], NULL);
-		x0Scan=strtod (argv[6], NULL);
-		SensorChoice=strtod(argv[7],NULL);
+		AbsorberDiam=strtod (argv[1], NULL);
+		AbsorberThickness=strtod (argv[2], NULL);
+		AbsorberMaterial=strtod (argv[3], NULL);
+		ZValue=strtod (argv[4], NULL);
+		FilterFlag=strtod (argv[5], NULL);
+		TBRvalue=strtod (argv[6],NULL);
+		SourceChoice=strtod (argv[7], NULL);
+		x0Scan=strtod (argv[8], NULL);
+		SensorChoice=strtod(argv[9],NULL);
 		
 		G4cout<<"DEBUG Initial parameter check x0= "<<x0Scan<<G4endl;
 		G4cout<<"DEBUG Initial parameter check z= "<<ZValue<<G4endl;
-		G4cout<<"DEBUG Initial parameter check CuDiam= "<<CuDiam<<G4endl;
+		G4cout<<"DEBUG Initial parameter check AbsorberDiam= "<<AbsorberDiam<<G4endl;
+		G4cout<<"DEBUG Initial parameter check AbsorberThickness= "<<AbsorberThickness<<G4endl;
+		G4cout<<"DEBUG Initial parameter check CuMaterial= "<<AbsorberMaterial<<G4endl;
 		G4cout<<"DEBUG Initial parameter check TBRvalue= "<<TBRvalue<<G4endl;
 		G4cout<<"DEBUG Initial parameter check FilterFlag= "<<FilterFlag<<G4endl;
 		G4cout<<"DEBUG Initial parameter check SourceChoice= "<<SourceChoice<<G4endl;
@@ -93,23 +97,35 @@ int main(int argc,char** argv)
 	G4int SourceSelect=SourceChoice;
 	if (SourceSelect==1|| SourceSelect==2) SrSourceFlag=1; //if it is a Sr source... tell to DetCons
 	
-	G4String FileNamePrim;
+	G4String MaterialiAssorbitore[3]= {"Cu","Al","PVC"};
 	
-	if (CuDiam>=0){
-		FileNamePrim="PrimariesX" + std::to_string((G4int)x0Scan) + "_Z" + std::to_string((G4int)(100*ZValue)) + "_CuD" + std::to_string((G4int)CuDiam) + "_Fil" + std::to_string((G4int)FilterFlag)  + "_TBR" + std::to_string((G4int)(10*TBRvalue))  ;
-	}
-	else	{
-		FileNamePrim="PrimariesX" + std::to_string((G4int)x0Scan) + "_Z" + std::to_string((G4int)(100*ZValue)) + "_NoCuD"  + "_Fil" + std::to_string((G4int)FilterFlag)  + "_TBR" + std::to_string((G4int)(10*TBRvalue))  ;
-	}
+	G4String FileNamePrim="Primaries";
+	G4String OutFileName="CMOSmc";
+	G4String FileNameCommonPart;
 	
+	FileNameCommonPart.append("_X"+ std::to_string((G4int)x0Scan));
+	FileNameCommonPart.append("_Z"+ std::to_string((G4int)(100*ZValue)));
 	
-	if (SrSourceFlag) FileNamePrim.append("_Sr");
+	if (AbsorberDiam>=0) FileNameCommonPart.append("_AbsDz" + std::to_string((G4int)(1000*AbsorberThickness))+"_AbsHole" + std::to_string((G4int)(100*AbsorberDiam)) +"_AbsMat" + MaterialiAssorbitore[AbsorberMaterial]);
+	else FileNameCommonPart.append("_NoAbs");
 	
-	if (SensorChoice==1) FileNamePrim.append("_011");
-	if (SensorChoice==2) FileNamePrim.append("_115");
-	if (SensorChoice==3) FileNamePrim.append("_60035");
 
-	FileNamePrim.append(+ ".dat");
+	if (SourceSelect==1) FileNameCommonPart.append("_PSr");
+	if (SourceSelect==2) FileNameCommonPart.append("_ExtSr");
+	if (SourceSelect==3) FileNameCommonPart.append("_ExtY_TBR"+ std::to_string((G4int)TBRvalue));
+//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
+	
+	if (SensorChoice==1) FileNameCommonPart.append("_011");
+	if (SensorChoice==2) FileNameCommonPart.append("_115");
+	if (SensorChoice==3) FileNameCommonPart.append("_60035");
+
+	if (argc<11) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
+
+	
+	FileNamePrim.append(FileNameCommonPart);
+	OutFileName.append(FileNameCommonPart);
+
+
 	std::ofstream primFile(FileNamePrim, std::ios::out);
 	
 	// Choose the Random engine
@@ -125,7 +141,7 @@ int main(int argc,char** argv)
 	
 	// Set mandatory initialization classes
 	// Detector construction
-	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, CuDiam, FilterFlag, SrSourceFlag, SensorChoice)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
+	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SrSourceFlag, SensorChoice)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
 	
 	// Physics list
 	//G4VModularPhysicsList* physicsList = new QBBC;
@@ -139,7 +155,7 @@ int main(int argc,char** argv)
 	
 	// User action initialization
 	//	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, CuDiam, FilterFlag, primFile, TBRvalue,SourceSelect, SourceSelect));
-	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, CuDiam, FilterFlag, primFile, TBRvalue, SourceSelect, SensorChoice));
+	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, AbsorberDiam, FilterFlag, primFile, TBRvalue, SourceSelect, SensorChoice, OutFileName));
 	
 	// Initialize visualization
 	//
@@ -157,7 +173,7 @@ int main(int argc,char** argv)
 	if ( ! ui ) {
 		// batch mode
 		G4String command = "/control/execute ";
-		G4String fileName = argv[8];
+		G4String fileName = argv[10];
 		UImanager->ApplyCommand(command+fileName);
 	}
 	else {

@@ -50,9 +50,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, G4bool SrSourceFlag, G4int SensorChoice)
+B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4bool SrSourceFlag, G4int SensorChoice)
 : G4VUserDetectorConstruction(),
-fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fFilterFlag(FilterFlag), fSrSourceFlag(SrSourceFlag), fSensorChoice(SensorChoice)
+fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSrSourceFlag(SrSourceFlag), fSensorChoice(SensorChoice)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -168,8 +168,10 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4Material* pix_mat = nist->FindOrBuildMaterial("G4_Si");
 	G4Material* Cmos_mat = nist->FindOrBuildMaterial("G4_Si");
 	G4Material* carrier_mat = nist->FindOrBuildMaterial("G4_POLYVINYL_CHLORIDE");
-	
-	
+//	carrier_mat=world_mat; //to remove carrier behind CMOS
+	if (fCuMaterial==2) 	shapeCo_mat=nist->FindOrBuildMaterial("MyAlu");
+	else if (fCuMaterial==3) shapeCo_mat=nist->FindOrBuildMaterial("G4_POLYVINYL_CHLORIDE");
+//	shapeCo_mat=carrier_mat;
 	//###################################################################
 	//###################################################
 	// Definitions of dimensions and sizes
@@ -216,7 +218,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//### Copper Collimator
 	G4double RminCo = fabs(fCuDiam)/2.;
 	G4double RmaxCo = 18.*mm;
-	G4double DzCo= 1.*mm;
+	G4double DzCo= fCuThickness*mm;
 	G4double SPhiCo = 0.*deg;
 	G4double DPhiCo = 360.*deg;
 	//###
@@ -233,7 +235,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###
 	
 	//### CMOS pixel (defaults geom values are for MTV011 Sensor (1))
-	G4int ScaleFactor=1; //set to 1 for full simulation, 10 for quick view
+	G4int ScaleFactor=10; //set to 1 for full simulation, 10 for quick view
 	G4double PixelSize=5.6*um;
 	G4double PixelThickness=4.5*um;
 	G4double gapX =0.01*um;
@@ -315,6 +317,9 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 		Z_resin= fZValue-DistFilterCmos - Resin_sizeZ*0.5- DummyCmos_sizeZ;
 		cmos_ZScan=fZValue + Cmos_sizeZ*0.5;
 	}
+	
+	G4double carrier_Z=cmos_ZScan +0.5*carrier_sizeZ + Cmos_sizeZ/2.; //was missing the last /2.
+
 	
 	/*
 	 if(fSensorChoice==1) {
@@ -685,7 +690,6 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###################################################
 	// CMOS-carrier PVC
 	//##########################
-	G4double carrier_Z=cmos_ZScan +0.5*carrier_sizeZ + Cmos_sizeZ;
 	G4ThreeVector posCarrier = G4ThreeVector(fX0Scan, 0, carrier_Z);
 	
 	G4cout<<"GEOMETRY DEBUG - Z thickness of solidCarrier= "<<carrier_sizeZ/mm<<", Z pos= "<<carrier_Z/mm<<G4endl;

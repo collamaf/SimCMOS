@@ -49,7 +49,7 @@ class G4Run;
 class B1RunAction : public G4UserRunAction
 {
 public:
-	B1RunAction(G4double, G4double, G4double, G4int, G4double, G4int, G4int);
+	B1RunAction(G4double, G4double, G4double, G4int, G4double, G4int, G4int, G4String);
 	virtual ~B1RunAction();
 	
 	// virtual G4Run* GenerateRun();
@@ -87,6 +87,7 @@ public:
 	std::vector<G4double>& GetRunCosY() {return RunVectorCosY; }
 	std::vector<G4double>& GetRunCosZ() {return RunVectorCosZ; }
 	std::vector<G4double>& GetRunEnGen() {return RunVectorEnGen; }
+	std::vector<G4double>& GetRunPartGen() {return RunVectorPartGen; }
 	std::vector<G4double>& GetRunIsotopeGen() {return RunVectorIsotopeGen; }
 	
 	std::vector<G4double>& GetRunEAbsComp() {return RunVectorEAbsComp; }
@@ -168,6 +169,7 @@ private:
 	std::vector<G4double> RunVectorCosZ;
 	
 	std::vector<G4double> RunVectorEnGen;
+	std::vector<G4double> RunVectorPartGen;
 	std::vector<G4double> RunVectorIsotopeGen;
 	
 	
@@ -192,6 +194,7 @@ private:
 	 std::vector<G4double> RunVectorSourceEne;
 	 */
 	
+	G4String fFileName;
 	
 };
 

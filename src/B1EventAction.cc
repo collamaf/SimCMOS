@@ -99,6 +99,7 @@ void B1EventAction::BeginOfEventAction(const G4Event* )
 	(fRunAction->GetRunCosZ()).clear();
 
 	(fRunAction->GetRunEnGen()).clear();
+	(fRunAction->GetRunPartGen()).clear();
 	(fRunAction->GetRunIsotopeGen()).clear();
 
 	(fRunAction->SetMotherIsotope(-10));
@@ -196,7 +197,7 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 //		analysisManager->FillNtupleDColumn(1,6, fSourceEne/keV);
 //		analysisManager->FillNtupleDColumn(1,7, fSourceIsotope);
 // 		analysisManager->FillNtupleDColumn(1,16, fSourceIsotope);
-		analysisManager->FillNtupleDColumn(1,18, fNSourceExit);
+		analysisManager->FillNtupleDColumn(1,19, fNSourceExit);
 		
 		analysisManager->AddNtupleRow(1);
 	}

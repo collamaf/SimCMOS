@@ -48,7 +48,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1RunAction::B1RunAction(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, G4double TBR, G4int SourceSelect, G4int SensorChoice)
+B1RunAction::B1RunAction(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, G4double TBR, G4int SourceSelect, G4int SensorChoice, G4String FileName)
 : G4UserRunAction(),
 fEdep("Edep", 0.),
 fEdep2("Edep2", 0.),
@@ -60,6 +60,7 @@ fEdkin("Edkin", 0.)
 , fTBR(TBR)
 , fSourceSelect(SourceSelect)
 , fSensorChoice(SensorChoice)
+, fFileName(FileName)
 
 {
 	// Register accumulable to the accumulable manager
@@ -222,7 +223,8 @@ void B1RunAction::CreateHistogram()
 	if (fSensorChoice==3) fileName.append("_60035");
 
 	
-	analysisManager->OpenFile(fileName);
+//	analysisManager->OpenFile(fileName);
+	analysisManager->OpenFile(fFileName);
 
 	// Creating ntuple
 	
@@ -282,6 +284,7 @@ void B1RunAction::CreateHistogram()
 	
 	//	analysisManager->CreateNtupleDColumn(1,"AllEne");                           //6
 	analysisManager->CreateNtupleDColumn(1,"AllEne", RunVectorEnGen);                           //6
+	analysisManager->CreateNtupleDColumn(1,"AllPart", RunVectorPartGen);                           //6
 //	analysisManager->CreateNtupleDColumn(1,"AllIsotope");                           //7
 	analysisManager->CreateNtupleDColumn(1,"AllIsotope", RunVectorIsotopeGen);                           //7
 	analysisManager->CreateNtupleDColumn(1,"ExitX", RunVectorXExit);                           //8
