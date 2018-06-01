@@ -59,13 +59,14 @@ int main(int argc,char** argv)
 {
 	
 	G4bool VisFlag=true;
+	G4bool QuickFlag=true;
 
 	// Detect interactive mode (if no arguments) and define UI session
 	G4UIExecutive* ui = 0;
 
 	
-	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=5*mm,AbsorberThickness=1*mm, TBRvalue=1;
-	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1;
+	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
+	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine;
 	
 	G4String fileName ="";
 	
@@ -110,22 +111,28 @@ int main(int argc,char** argv)
 			{
 				SensorChoice=strtod (argv[++i], NULL);;
 			}
+			else if(option.compare("-Quick")==0)
+			{
+				QuickFlagCommandLine=strtod (argv[++i], NULL);;
+			}
 			
 		}
 		else
 		{
 			fileName = argv[i]; //se ho trovato una macro (senza il "-" davanti) significa che NON voglio l'interattivo
 			VisFlag=false;
+			QuickFlag=false;
 		}
+	if (QuickFlagCommandLine) QuickFlag=true;
 	
-	if ( VisFlag ) {
+	if ( VisFlag ) { //Prepare for vis
 		ui = new G4UIExecutive(argc, argv);
 	}
 	
 	G4int SourceSelect=SourceChoice;
 	if (SourceSelect==1|| SourceSelect==2) SrSourceFlag=1; //if it is a Sr source... tell to DetCons
 	
-	G4String MaterialiAssorbitore[3]= {"Cu","Al","PVC"};
+	G4String MaterialiAssorbitore[3]= {"Cu","Al","ABS"};
 	
 	G4String FileNamePrim="Primaries";
 	G4String OutFileName="CMOSmc";
@@ -134,7 +141,7 @@ int main(int argc,char** argv)
 	FileNameCommonPart.append("_X"+ std::to_string((G4int)x0Scan));
 	FileNameCommonPart.append("_Z"+ std::to_string((G4int)(100*ZValue)));
 	
-	if (AbsorberDiam>=0) FileNameCommonPart.append("_AbsDz" + std::to_string((G4int)(1000*AbsorberThickness))+"_AbsHole" + std::to_string((G4int)(100*AbsorberDiam)) +"_AbsMat" + MaterialiAssorbitore[AbsorberMaterial]);
+	if (AbsorberDiam>=0) FileNameCommonPart.append("_AbsDz" + std::to_string((G4int)(1000*AbsorberThickness))+"_AbsHole" + std::to_string((G4int)(100*AbsorberDiam)) +"_AbsMat" + MaterialiAssorbitore[AbsorberMaterial-1]);
 	else FileNameCommonPart.append("_NoAbs");
 	
 	FileNameCommonPart.append("_Fil" + std::to_string((G4int)FilterFlag));
@@ -149,9 +156,11 @@ int main(int argc,char** argv)
 	if (SensorChoice==3) FileNameCommonPart.append("_60035");
 	
 	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
+	if (QuickFlagCommandLine) FileNameCommonPart.append("_Quick"); //if it was a TEST run under vis
+
+	FileNameCommonPart.append(""); //possible final label
 	
-	
-	FileNamePrim.append(FileNameCommonPart);
+	FileNamePrim.append(FileNameCommonPart+".dat");
 	OutFileName.append(FileNameCommonPart);
 	
 	
@@ -170,7 +179,7 @@ int main(int argc,char** argv)
 	
 	// Set mandatory initialization classes
 	// Detector construction
-	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SrSourceFlag, SensorChoice)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
+	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SrSourceFlag, SensorChoice, QuickFlag)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
 	
 	// Physics list
 	//G4VModularPhysicsList* physicsList = new QBBC;

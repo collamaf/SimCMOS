@@ -50,9 +50,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4bool SrSourceFlag, G4int SensorChoice)
+B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4bool SrSourceFlag, G4int SensorChoice, G4bool QuickFlag)
 : G4VUserDetectorConstruction(),
-fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSrSourceFlag(SrSourceFlag), fSensorChoice(SensorChoice)
+fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSrSourceFlag(SrSourceFlag), fSensorChoice(SensorChoice), fQuickFlag(QuickFlag)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -166,11 +166,12 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4Material* shapeCo_mat = nist->FindOrBuildMaterial("G4_Cu");
 	G4Material* shapeDummy_mat = nist->FindOrBuildMaterial("G4_AIR");
 	G4Material* pix_mat = nist->FindOrBuildMaterial("G4_Si");
+//	pix_mat=nist->FindOrBuildMaterial("G4_Pb");
 	G4Material* Cmos_mat = nist->FindOrBuildMaterial("G4_Si");
 	G4Material* carrier_mat = nist->FindOrBuildMaterial("G4_POLYVINYL_CHLORIDE");
 //	carrier_mat=world_mat; //to remove carrier behind CMOS
 	if (fCuMaterial==2) 	shapeCo_mat=nist->FindOrBuildMaterial("MyAlu");
-	else if (fCuMaterial==3) shapeCo_mat=nist->FindOrBuildMaterial("G4_POLYVINYL_CHLORIDE");
+	else if (fCuMaterial==3) shapeCo_mat=ABS;
 //	shapeCo_mat=carrier_mat;
 	//###################################################################
 	//###################################################
@@ -235,7 +236,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###
 	
 	//### CMOS pixel (defaults geom values are for MTV011 Sensor (1))
-	G4int ScaleFactor=1; //set to 1 for full simulation, 10 for quick view
+	G4int ScaleFactor=1;
+	if (fQuickFlag) ScaleFactor=10;
 	G4double PixelSize=5.6*um;
 	G4double PixelThickness=4.5*um;
 	G4double gapX =0.01*um;
@@ -546,6 +548,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//Dummy volume for scoring what exits source
 	//##########################
 	
+	if (fCuDiam>=0) zDummy+=DzCo; //if I placed the Absorber, move the dummy volume after it
 	
 	G4ThreeVector posDummy = G4ThreeVector(0, 0, zDummy);
 	

@@ -6,7 +6,7 @@ cd build
 cmake -DGeant4_DIR=$G4INSTALL ../
 make
 ./exampleB1
-./exampleB1 {CuDiam (<0->no Cu)} {CuThickness} {Cu Material 1-Cu 2-Al 3-PVC} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
+./exampleB1 {CuDiam (<0->no Cu)} {CuThickness} {Cu Material 1-Cu 2-Al 3-ABS} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
 e.g.:
 ./exampleB1 0 0.3 1 1.74 1 10 2 0 2 ../run1.mac 
 ```
@@ -27,7 +27,7 @@ Sensor Choice:
 - Cu collimator on top of Sr source (toggleble)
 - CMOS Detector starting at Z offset (Z distance is from source surface to possible resin in case of sensor 1, or up to the sensor in case of sensor 2, even if with filter)
 - Sensor resin filter in contact with CMOS (towards source)
-- Dummy volume for scoring purposes between source (or if presente CU Collimator) and World to score what exits the primary generation
+- Dummy volume for scoring purposes between source (or if present CU Collimator) and World to score what exits the primary generation
 - "infinite" carrier volume behind CMOS to simulate mechanical support
 
 
@@ -43,7 +43,7 @@ CPU TIMES NEEDED FOR 1e5 PRIMARIES:
 ## OUTPUT:
 The usual PrimariesX{}_Z{}_CuD{}_Fil{}_TBR{}{_Sr}.dat is created to keep track of the progress
 A root file named MCsondaGEANT_Z{XX}.root is created, reporting the Z offset value, in which on an event (i.e. a primary particle) by event basis it is stored:
-### SOURCE vector (one entry per primary particle, only for first 100k primaries if more primaries are requested):
+### SOURCE vector (one entry per primary particle):
 - AllX: X coordinate of primary particle [mm];
 - AllY: Y coordinate of primary particle [mm];
 - AllZ: Z coordinate of primary particle [mm];
@@ -52,7 +52,7 @@ A root file named MCsondaGEANT_Z{XX}.root is created, reporting the Z offset val
 - AllCosZ[2]: Z directive cosine of produced electron;
 - AllEne[2]: kinetic energy of produced electron [keV];
 - AllIsotope[2]: isotope of primary particle (0=Sr, 1=Y);
-- ExitX: X coordinate of primary particle exiting the source volume [mm];
+- ExitX: X coordinate of primary particle exiting the source volume [mm]; ("Exiting" means going from source to dummy or from absorber to dummy if there is an absorber)
 - ExitY: Y coordinate of primary particle exiting the source volume [mm];
 - ExitZ: Z coordinate of primary particle exiting the source volume [mm];
 - ExitCosX[2+]: X directive cosine of primary particle exiting the source volume;
@@ -99,16 +99,14 @@ to see energy spectrum of electrons created by Sr/Y that exit the source
 
 Per disegnare contributi Sr e Y:
 ```
-B1->Draw("Eabs")
-B1->SetLineColor(kBlue)
-B1->Draw("InCmosEnSr","","same")
-B1->SetLineColor(kRed)
-B1->Draw("InCmosEnY","","same")
+pezzi di codice
+file=$(ls -t Primaries_X0_Z*.dat | head -n1); tail -f $file
+
 ````
 
 da CMOS/CodiceCMOS
 
-Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fil1_TBR10_ExtSr_115_Frame100.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -frameSize 488x648 -t 7
+Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fil1_TBR10_ExtSr_115_Frame100.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -frameSize 488x648 -t 7 -mc
 
 
 
@@ -158,10 +156,17 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fi
 - Now if run in vis mode the file root ends with xxxTEST not to overwrite important ones
 - Now arguments are taken with labels, not necessary to give them all! If a macro is provided no visualization is init.. cool!
 
+2018.06.01 by collamaf
+- Added "QuickFlag" in main to automatically scale number of pixel if I want to visualize geometry
+- ".dat" was missing after Primaries file
+- Fixed problem with positioning of dummy after source (or possible absorber)
+- Added QuickFlag to be passed as an argument to program to call for scaled down geometry
+- Added structure to classify energy release due to e+/e-/gamma
 
 ## TO DO's
 
 - aggiungere il gallio? (cioè solo i parametri da input, magari aspettando di fare in modo che possano essere inseriti solo quelli interessanti..)
 - correct readme regarding Root file vectors
+- sistemare il fatto che con sourceselect=4 per qualche motivo piazza quella di Y.. insomma rivedere come DetCos piazza le sorgenti
 
 

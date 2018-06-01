@@ -55,9 +55,9 @@ public:
 	
 	void AddNoPre(G4int PreNo) { fPreNo += PreNo; }
 	
-	void AddEdepSr(G4double edepSr) { fEdepSr += edepSr; }
-	//	void AddEdepEl(G4double edepEl) { fEdepEl += edepEl; }
-	void AddEdepY(G4double edepY) { fEdepY += edepY; }
+	void AddEdepEle(G4double edepEle) { fEdepEle += edepEle; }
+	void AddEdepPos(G4double edepPos) { fEdepPos += edepPos; }
+	void AddEdepFot(G4double edepFot) { fEdepFot += edepFot; }
 	G4double GetSourceX() {return fSourceX;}
 	void SetSourceX(G4double sx) {fSourceX=sx;}
 	void SetSourceY(G4double sy) {fSourceY=sy;}
@@ -86,8 +86,9 @@ public:
 	void ResetPassCounterCmos() {fPassCounterCmos=0;}
 	G4int GetPassCounterCmos(void) {return fPassCounterCmos;}
 	
-	
-	
+	void SetEnteringParticle(G4int part) {fEnteringParticle=part;}
+	G4int GetEnteringParticle(void) {return fEnteringParticle;}
+
 	
 	//  void SetStopPosition (G4double x,G4double y, G4double z){
 	//  xstop=x;
@@ -107,9 +108,14 @@ private:
 	G4int fno;
 	G4int fPreNo;
 	
-	G4double     fEdepSr;
+//	G4double     fEdepSr;
 	//	G4double     fEdepEl;
-	G4double     fEdepY;
+//	G4double     fEdepY;
+	
+	G4double	fEdepEle;
+	G4double	fEdepPos;
+	G4double	fEdepFot;
+	G4int fEnteringParticle;
 	
 	
 	G4double fSourceX;
