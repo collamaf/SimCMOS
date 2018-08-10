@@ -35,6 +35,7 @@
 #include "G4EmStandardPhysics.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4RegionStore.hh"
+#include "G4EmLivermorePhysics.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -50,7 +51,8 @@ B1PhysicsList::B1PhysicsList()
   RegisterPhysics(new G4RadioactiveDecayPhysics());
 
   // EM physics
-  RegisterPhysics(new G4EmStandardPhysics());
+//  RegisterPhysics(new G4EmStandardPhysics());
+	RegisterPhysics(new G4EmLivermorePhysics());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

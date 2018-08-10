@@ -95,6 +95,9 @@ public:
 	std::vector<G4double>& GetRunEnPre() {return RunVectorEnPre; }
 	std::vector<G4double>& GetRunPart() {return RunVectorPart; }
 	
+	std::vector<G4double>& GetRunPreFilterEn() {return RunVectorPreFilterEn; }
+	std::vector<G4double>& GetRunPreFilterPart() {return RunVectorPreFilterPart; }
+	
 	std::vector<G4double>& GetRunPixNo() {return RunVectorPixNo; }
 //	std::vector<G4double>& GetRunPixEneDep() {return RunVectorPixEneDep; }
 	std::vector<G4double>& GetRunPixXpos() {return RunVectorPixXpos; }
@@ -158,6 +161,9 @@ private:
 	
 	std::vector<G4double> RunVectorEnPre;
 	std::vector<G4double> RunVectorPart;
+	
+	std::vector<G4double> RunVectorPreFilterEn;
+	std::vector<G4double> RunVectorPreFilterPart;
 	
 	std::vector<G4double> RunVectorPixNo;
 //	std::vector<G4double> RunVectorPixEneDep;

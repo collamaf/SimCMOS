@@ -54,6 +54,7 @@ public:
 	void AddNo(G4int no) { fno += no; }
 	
 	void AddNoPre(G4int PreNo) { fPreNo += PreNo; }
+	void AddNoPreFilter(G4int PreFilterNo) {fPreFilterNo+=PreFilterNo;}
 	
 	void AddEdepEle(G4double edepEle) { fEdepEle += edepEle; }
 	void AddEdepPos(G4double edepPos) { fEdepPos += edepPos; }
@@ -107,7 +108,8 @@ private:
 	// G4double zstop;
 	G4int fno;
 	G4int fPreNo;
-	
+	G4int fPreFilterNo;
+
 //	G4double     fEdepSr;
 	//	G4double     fEdepEl;
 //	G4double     fEdepY;

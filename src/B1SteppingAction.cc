@@ -75,6 +75,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 //	if((NextVol && ThisVol->GetName()=="Resin" && NextVol->GetName()=="CMOS")|| (NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world) before 2018.05.29
 		if((NextVol && ThisVol->GetName()=="DummyCMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world) after 2018.05.29
+			if (debug) G4cout<<"DEBUG!!! Entrato in CMOS!!! "<<G4endl;
 
 			if (debug) G4cout<<"\nCIAODEBUG\n Particella entrata in CMOS da dummy - fEventAction->GetEnteringParticle() ERA = "<<fEventAction->GetEnteringParticle();
 			fEventAction->SetEnteringParticle(step->GetTrack()->GetDynamicParticle() ->GetPDGcode());
@@ -102,6 +103,22 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 	// ###################### END ENTERING CMOS
 	// ########################################
+	
+	
+	// ########################################
+	// ###################### ENTERING FILTER
+	
+	if((NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="Resin")) { //what enters Resin
+		if (debug) G4cout<<"DEBUG!!! Entrato in Resin!!! "<<G4endl;
+		G4double eKinPre = step->GetPostStepPoint()->GetKineticEnergy();
+		
+		runStepAction->GetRunPreFilterEn().push_back(eKinPre/keV);
+		runStepAction->GetRunPreFilterPart().push_back(step->GetTrack()->GetDynamicParticle() ->GetPDGcode());
+		fEventAction->AddNoPreFilter(1); //update the counter of particles entering RESIN in the event
+	}
+	
+	// ###################### END ENTERING CMOS
+	// ########################################
 
 	
 	//Modified on 2017-11-17 by collamaf: now the condition works for both cases: with or without Cu collimator.
@@ -109,8 +126,13 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 	// ########################################
 	// ###################### EXITING SOURCE i.e. passing from 
-	if( NextVol && ( (fCuDiam<0 &&  ( (ThisVol->GetName()=="SourceSR" && NextVol->GetName()=="Dummy") || (ThisVol->GetName()=="SourceExtY" && NextVol->GetName()=="Dummy"))) || ( (fCuDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source
-		
+//	if( NextVol && ( (fCuDiam<0 &&  ( (ThisVol->GetName()=="SourceSR" && NextVol->GetName()=="Dummy") || (ThisVol->GetName()=="SourceExtY" && NextVol->GetName()=="Dummy"))) || ( (fCuDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source - PRE SOURCE SIMPLIFICATION 2018-07-24
+
+		if( NextVol && ( (fCuDiam<0 &&  ( (ThisVol->GetName()=="Source" && NextVol->GetName()=="Dummy"))) || ( (fCuDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source
+
+
+		if (debug) G4cout<<"DEBUG!!! Uscito da source!!! "<<G4endl;
+
 		//collamaf: to avoid double counting same track going back and forth, check if I already counted it
 		if (fEventAction->GetStoreTrackIDSource()==step->GetTrack()->GetTrackID()) { //if I already saw this track exiting the source...
 			fEventAction->AddPassCounterSource(1);  //increase the counter
@@ -153,11 +175,16 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	= step->GetPreStepPoint()->GetTouchableHandle()
 	->GetVolume()->GetLogicalVolume();
 	
+	if (ThisVol->GetName()=="CMOS" || (NextVol && NextVol->GetName()=="CMOS")) {
+		G4Event* evt = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
+//		evt->KeepTheEvent();
+	}
 	
 	// ########################################
 	// ###################### INSIDE CMOS - Per each hit into sensitive detector
 	// check if we are in scoring volume
 	if (volume== fScoringVolume) {
+	
 		//pixel information collection
 		G4int CopyNB=step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber();
 		fEventAction->AddNo(1);

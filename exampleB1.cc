@@ -54,6 +54,8 @@
 #include <stdlib.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+using namespace std;
+
 
 int main(int argc,char** argv)
 {
@@ -66,9 +68,14 @@ int main(int argc,char** argv)
 
 	
 	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
-	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine;
+	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine=0;
 	
 	G4String fileName ="";
+	G4String FileNameLabel="";
+
+	
+	G4int NoOfPrimToGen=100, Verbose=0;
+	
 	
 	for(int i=1;i<argc;i++)
 		if(argv[i][0] =='-')
@@ -107,13 +114,24 @@ int main(int argc,char** argv)
 			{
 				x0Scan=strtod (argv[++i], NULL);;
 			}
+			else if(option.compare("-Vis")==0)
+			{
+				VisFlag=stoi (argv[++i], NULL);;
+			}
 			else if(option.compare("-Sensor")==0)
 			{
 				SensorChoice=strtod (argv[++i], NULL);;
 			}
+			else if(option.compare("-NPrim")==0)
+			{
+				NoOfPrimToGen=stoi (argv[++i], NULL);;
+			}
 			else if(option.compare("-Quick")==0)
 			{
 				QuickFlagCommandLine=strtod (argv[++i], NULL);;
+			}else if(option.compare("-Label")==0)
+			{
+				FileNameLabel= argv[++i];;
 			}
 			
 		}
@@ -149,6 +167,10 @@ int main(int argc,char** argv)
 	if (SourceSelect==1) FileNameCommonPart.append("_PSr");
 	if (SourceSelect==2) FileNameCommonPart.append("_ExtSr");
 	if (SourceSelect==3) FileNameCommonPart.append("_ExtY_TBR"+ std::to_string((G4int)TBRvalue));
+	if (SourceSelect==4) FileNameCommonPart.append("_PCo60");
+	if (SourceSelect==5) FileNameCommonPart.append("_PNa22");
+	if (SourceSelect==6) FileNameCommonPart.append("_PBa133");
+	if (SourceSelect==7) FileNameCommonPart.append("_PCs137");
 	//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
 	
 	if (SensorChoice==1) FileNameCommonPart.append("_011");
@@ -158,7 +180,8 @@ int main(int argc,char** argv)
 	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
 	if (QuickFlagCommandLine) FileNameCommonPart.append("_Quick"); //if it was a TEST run under vis
 
-	FileNameCommonPart.append(""); //possible final label
+//	FileNameCommonPart.append(""); //possible final label
+	if (FileNameLabel!="") FileNameCommonPart.append("_" + FileNameLabel);
 	
 	FileNamePrim.append(FileNameCommonPart+".dat");
 	OutFileName.append(FileNameCommonPart);
@@ -179,7 +202,7 @@ int main(int argc,char** argv)
 	
 	// Set mandatory initialization classes
 	// Detector construction
-	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SrSourceFlag, SensorChoice, QuickFlag)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
+	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SourceChoice, SensorChoice, QuickFlag)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
 	
 	// Physics list
 	//G4VModularPhysicsList* physicsList = new QBBC;

@@ -95,7 +95,7 @@ void B1RunAction::BeginOfRunAction(const G4Run* run)
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	
 	nbEventInRun = run->GetNumberOfEventToBeProcessed();
-	analysisManager->FillNtupleIColumn(0,24, nbEventInRun);
+	analysisManager->FillNtupleIColumn(0,28, nbEventInRun);
 
 	
 }
@@ -218,6 +218,11 @@ void B1RunAction::CreateHistogram()
 	if (fSourceSelect==1) fileName.append("_PSr");
 	if (fSourceSelect==2) fileName.append("_ExtSr");
 	if (fSourceSelect==3) fileName.append("_ExtY");
+	if (fSourceSelect==4) fileName.append("_PCo60");
+	if (fSourceSelect==5)  fileName.append("_PNa22");
+	if (fSourceSelect==6)  fileName.append("_PBa133");
+	if (fSourceSelect==7)  fileName.append("_PCs137");
+	
 	if (fSensorChoice==1) fileName.append("_011");
 	if (fSensorChoice==2) fileName.append("_115");
 	if (fSensorChoice==3) fileName.append("_60035");
@@ -233,6 +238,9 @@ void B1RunAction::CreateHistogram()
 	
 	analysisManager->CreateNtupleDColumn(0,"Eabs");                           //0
 	analysisManager->CreateNtupleDColumn(0,"EabsComp", RunVectorEAbsComp); //1
+	analysisManager->CreateNtupleDColumn(0,"PreFilterTrackN");                  //2b
+	analysisManager->CreateNtupleDColumn(0,"PreFilterPart", RunVectorPreFilterPart); //3b
+	analysisManager->CreateNtupleDColumn(0,"PreFilterEn", RunVectorPreFilterEn); //4b
 	analysisManager->CreateNtupleDColumn(0,"PreCmosTrackN");                  //2
 	analysisManager->CreateNtupleDColumn(0,"PreCmosPart", RunVectorPart); //3
 	analysisManager->CreateNtupleDColumn(0,"PreCmosEn", RunVectorEnPre); //4
@@ -259,6 +267,7 @@ void B1RunAction::CreateHistogram()
 	analysisManager->CreateNtupleDColumn(0,"SourceCosZ", RunVectorCosZ); //19
 
 	analysisManager->CreateNtupleDColumn(0,"SourceEne", RunVectorEnGen); //20
+	analysisManager->CreateNtupleDColumn(0,"SourcePart", RunVectorPartGen); //20
 	analysisManager->CreateNtupleDColumn(0,"SourceIsotope", RunVectorIsotopeGen); //21
 	analysisManager->CreateNtupleIColumn(0,"Nev");							//22
 

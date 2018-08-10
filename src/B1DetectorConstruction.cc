@@ -50,9 +50,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4bool SrSourceFlag, G4int SensorChoice, G4bool QuickFlag)
+B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4double SourceSelect, G4int SensorChoice, G4bool QuickFlag)
 : G4VUserDetectorConstruction(),
-fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSrSourceFlag(SrSourceFlag), fSensorChoice(SensorChoice), fQuickFlag(QuickFlag)
+fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fQuickFlag(QuickFlag)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -68,7 +68,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4NistManager* nist = G4NistManager::Instance();
 	
 	// Option to switch on/off checking of volumes overlaps
-	//
+	// d
 	G4bool checkOverlaps = false;
 	
 	//
@@ -77,7 +77,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double world_sizeXY = 0.2*m;
 	G4double world_sizeZ  = 0.2*m;
 	G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
-	//	G4Material* world_mat = nist->FindOrBuildMaterial("G4_Galactic");
+//	G4Material* world_mat = nist->FindOrBuildMaterial("G4_Galactic");
 	
 	G4Box* solidWorld =
 	new G4Box("World",                       //its name
@@ -133,7 +133,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	 G4NistManager::Instance()->
 	 BuildMaterialWithNewDensity("Water_1.05","G4_WATER",1.05*g/cm3);
 	 */
-	G4bool SrSource=fSrSourceFlag;
+	G4bool SrSource=false;
+	if (fSourceSelect==1 || fSourceSelect==2) SrSource=true;
 	
 	//###################################################
 	// AGAR AGAR Source - AgarAgar should be C14 H24 O9
@@ -149,18 +150,40 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###################################################
 	// ABS material - ABS should be C15 H17 N
 	//##########################
-	G4double ABSdensity = 0.7*g/cm3;
+	G4double ABSdensity = 1.037*g/cm3; //was 0.7 @Stefano, now 1.037 measured by Rosa 
 	G4Material* ABS = new G4Material (name="ABS", ABSdensity, ncomponents=3);
 	ABS->AddElement (elH, natoms=17);
 	ABS->AddElement (elC, natoms=15);
 	ABS->AddElement (elN, natoms=1);
+	
+	G4double d ;
+	G4Element* elSi = new G4Element("Silicon" ,"Si" , 14., 28.09*g/mole);
+
+
+	G4Material* SiO2 =
+	new G4Material("quartz",d= 2.200*g/cm3, natoms=2);
+	SiO2->AddElement(elSi, natoms=1);
+	SiO2->AddElement(elO , natoms=2);
+	
+	d= 1.2*g/cm3;
+	//Epoxy (for FR4 )
+	G4Material* Epoxy = new G4Material("Epoxy" , d, 2);
+	Epoxy->AddElement(elH, natoms=2);
+	Epoxy->AddElement(elC, natoms=2);
+	
+	
+	//FR4 (Glass + Epoxy)
+	d = 1.86*g/cm3;
+	G4Material* FR4 = new G4Material("FR4"  , d, 2);
+	FR4->AddMaterial(SiO2, 0.528);
+	FR4->AddMaterial(Epoxy, 0.472);
 	
 	
 	//############ MATERIAL ASSIGNMENT
 	G4Material* SourceExtY_mat = AgarAgar;
 	G4Material* ABSaround_mat = ABS;
 	G4Material* ABSbehind_mat = ABS;
-	G4Material* SourceSR_mat = nist->FindOrBuildMaterial("MyAlu"); //G4_Al
+	G4Material* SourceExtSR_mat = nist->FindOrBuildMaterial("MyAlu"); //G4_Al
 	G4Material* Resin_mat = Resin;
 	//	Resin_mat=nist->FindOrBuildMaterial("G4_Pb");
 	G4Material* shapeCo_mat = nist->FindOrBuildMaterial("G4_Cu");
@@ -173,6 +196,22 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	if (fCuMaterial==2) 	shapeCo_mat=nist->FindOrBuildMaterial("MyAlu");
 	else if (fCuMaterial==3) shapeCo_mat=ABS;
 //	shapeCo_mat=carrier_mat;
+	carrier_mat=FR4;
+	
+	
+	G4Material* polycarbonate = new G4Material("Polycarbonate", density= 1.2*g/cm3, ncomponents=3); //Gamma source wheight measured 2018.07.27: 1.797g, V=1.5 cm3
+	polycarbonate->AddElement(elH, 5.5491*perCent);
+	polycarbonate->AddElement(elC, 75.5751*perCent);
+	polycarbonate->AddElement(elO, 18.8758*perCent);
+	
+	G4Material* GammaSource_mat = polycarbonate;
+	
+	
+	G4double densityPSrSource = 0.9643*g/cm3;
+	//	G4NistManager* man = G4NistManager::Instance();
+	G4NistManager::Instance()->BuildMaterialWithNewDensity("MyPlastic","G4_POLYVINYL_CHLORIDE",densityPSrSource);
+	G4Material* SourcePSR_mat=nist->FindOrBuildMaterial("MyPlastic");
+	
 	//###################################################################
 	//###################################################
 	// Definitions of dimensions and sizes
@@ -201,13 +240,25 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//###
 	
 	
-	//### Sr Source
-	G4double RminSourceSR = 0.*mm;
-	G4double RmaxSourceSR = 12.5*mm; //physical dimensions same for PG/RM sources, the active one differs
-	G4double DzSourceSR= 3*mm;
+	//### Ext Sr Source
+	G4double RminSourceExtSR = 0.*mm;
+	G4double RmaxSourceExtSR = 12.5*mm; //physical dimensions same for PG/RM sources, the active one differs
+	G4double DzSourceExtSR= 3*mm;
+	//### Point Sr Source
+	G4double RminSourcePSR = 0.*mm;
+	G4double RmaxSourcePSR = 12.5*mm;
+	G4double DzSourcePSR= 0.7*mm;
+
 	G4double SPhiSourceSR = 0.*deg;
 	G4double DPhiSourceSR = 360.*deg;
 	//###
+	
+	//### Point Cp Source
+	G4double RminSourceGamma = 0.*mm;
+	G4double RmaxSourceGamma = 12.5*mm;
+	G4double DzSourceGamma= 3*mm;
+
+	
 	
 	//### Filter
 	G4double Resin_sizeX=0*mm;
@@ -228,7 +279,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double RminDummy = 0;
 	G4double RmaxDummy = 18.*mm;
 	if (fCuDiam>=0) RmaxDummy =RmaxCo;
-	else RmaxDummy=RmaxSourceSR;
+	else RmaxDummy=RmaxSourceExtSR;
 	G4double DzDummy= 1.e-5*mm;
 	G4double SPhiDummy = 0.*deg;
 	G4double DPhiDummy = 360.*deg;
@@ -274,7 +325,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	//### Carrier behind CMOS
 	G4double carrier_sizeX = 50.*mm;
 	G4double carrier_sizeY = 70.*mm;
-	G4double carrier_sizeZ  = 2.*mm;
+	G4double carrier_sizeZ  = 1.61*mm; //was 2mm until 2018.07.27
 	//###
 	
 	//### Absorber in front of Source
@@ -301,7 +352,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	
 	
 	//	if (fSensorChoice==2) fFilterFlag=1; //Sensor 2 is always with filter
-	if (fSensorChoice==3) fFilterFlag=0; //Sensor 3 is always with filter
+	if (fSensorChoice==3) fFilterFlag=0; //Sensor 3 (bare SiPm) is always without filter
 																			 //	if (fFilterFlag==1) {
 	Resin_sizeX = noX*PixelSize*ScaleFactor;
 	Resin_sizeY = noY*PixelSize*ScaleFactor;
@@ -349,7 +400,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4ThreeVector posSourceExtY = G4ThreeVector(0, 0, -DzSourceExtY*0.5);
 	
 	G4Tubs* solidSourceExtY =
-	new G4Tubs("SourceExtY",                       //its name
+	new G4Tubs("Source",                       //its name
 						 RminSourceExtY,
 						 RmaxSourceExtY,
 						 0.5*DzSourceExtY,
@@ -359,9 +410,9 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4LogicalVolume* logicSourceExtY =
 	new G4LogicalVolume(solidSourceExtY,          //its solid
 											SourceExtY_mat,           //its material
-											"SourceExtY");            //its name
+											"Source");            //its name
 	
-	if(!SrSource) { //I place the ExtY source if I am not asking for Sr source
+	if(fSourceSelect==3) { //I place the ExtY source if I am not asking for Sr source
 		G4cout<<"GEOMETRY DEBUG - Z thickness of solidSourceExtY= "<<DzSourceExtY/mm<<", Z pos= "<<-DzSourceExtY*0.5<<G4endl;
 		
 		G4cout<<"GEOMETRY DEBUG - ExtYTOC Source has been placed!!"<<G4endl;
@@ -369,7 +420,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 		new G4PVPlacement(0,                     //no rotation
 											posSourceExtY,       //at (0,0,0)
 											logicSourceExtY,            //its logical volume
-											"SourceExtY",               //its name
+											"Source",               //its name
 											logicWorld,            //its mother  volume
 											false,                 //no boolean operation
 											0,                     //copy number
@@ -401,7 +452,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 											ABSaround_mat,           //its material
 											"ABSaround");            //its name
 	
-	if(!SrSource) {  //I place the ABS carrier of the ExtY source if I am not asking for Sr source
+	if(fSourceSelect==3) {  //I place the ABS carrier of the ExtY source if I am not asking for Sr source
 		G4cout<<"GEOMETRY DEBUG - Z thickness of solidABSaround= "<<DzABSaround/mm<<", Z pos= "<<-DzABSaround*0.5<<G4endl;
 		
 		G4cout<<"GEOMETRY DEBUG - ExtYTOC Source has been placed!!"<<G4endl;
@@ -440,7 +491,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 											ABSbehind_mat,           //its material
 											"ABSbehind");            //its name
 	
-	if(!SrSource) { //I place the ABS carrier of the ExtY source if I am not asking for Sr source
+	if(fSourceSelect==3) { //I place the ABS carrier of the ExtY source if I am not asking for Sr source
 		G4cout<<"GEOMETRY DEBUG - Z thickness of solidABSbehind= "<<DzABSbehind/mm<<", Z pos= "<<-DzABSbehind*0.5- DzABSaround<<G4endl;
 		
 		G4cout<<"GEOMETRY DEBUG - ExtYTOC Source has been placed!!"<<G4endl;
@@ -462,44 +513,119 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	
 	
 	//###################################################
-	// Sr90 lab Source
+	// Extended Sr90 lab Source
 	//##########################
-	G4ThreeVector posSourceSR = G4ThreeVector(0, 0, -DzSourceSR*0.5);
+	G4ThreeVector posSourceExtSR = G4ThreeVector(0, 0, -DzSourceExtSR*0.5);
 	
-	G4cout<<"GEOMETRY DEBUG - Z thickness of solidSourceSR= "<<DzSourceSR/mm<<", Z pos= "<<-DzSourceSR*0.5<<G4endl;
+	G4cout<<"GEOMETRY DEBUG - Z thickness of solidSourceSR= "<<DzSourceExtSR/mm<<", Z pos= "<<-DzSourceExtSR*0.5<<G4endl;
 	
-	G4Tubs* solidSourceSR =
-	new G4Tubs("SourceSR",                       //its name
-						 RminSourceSR,
-						 RmaxSourceSR,
-						 0.5*DzSourceSR,
+	G4Tubs* solidSourceExtSR =
+	new G4Tubs("Source",                       //its name
+						 RminSourceExtSR,
+						 RmaxSourceExtSR,
+						 0.5*DzSourceExtSR,
 						 SPhiSourceSR,
 						 DPhiSourceSR);     //its size
 	
-	G4LogicalVolume* logicSourceSR =
-	new G4LogicalVolume(solidSourceSR,          //its solid
-											SourceSR_mat,           //its material
-											"SourceSR");            //its name
+	G4LogicalVolume* logicSourceExtSR =
+	new G4LogicalVolume(solidSourceExtSR,          //its solid
+											SourceExtSR_mat,           //its material
+											"Source");            //its name
 	
-	if(SrSource) { //If i requested the Sr source
-		G4cout<<"GEOMETRY DEBUG - Sr Source has been placed!!"<<G4endl;
+	if(fSourceSelect==2) { //If i requested the Sr source
+		G4cout<<"GEOMETRY DEBUG - Ext Sr Source has been placed!!"<<G4endl;
 		
 		new G4PVPlacement(0,                     //no rotation
-											posSourceSR,       //at (0,0,0)
-											logicSourceSR,            //its logical volume
-											"SourceSR",               //its name
+											posSourceExtSR,       //at (0,0,0)
+											logicSourceExtSR,            //its logical volume
+											"Source",               //its name
 											logicWorld,            //its mother  volume
 											false,                 //no boolean operation
 											0,                     //copy number
 											checkOverlaps);        //overlaps checking
 		
+		//G4Region* sorgente = new G4Region("SourceReg");
+		logicSourceExtSR->SetRegion(sorgente);
+		sorgente->AddRootLogicalVolume(logicSourceExtSR);
+	}
+	//################################################### END EXT SR SOURCE
+
+	
+	//###################################################
+	// Pointlike Sr90 lab Source
+	//##########################
+	G4ThreeVector posSourcePSR = G4ThreeVector(0, 0, -DzSourcePSR*0.5);
+	
+	G4cout<<"GEOMETRY DEBUG - Z thickness of solidSourceSR= "<<DzSourcePSR/mm<<", Z pos= "<<-DzSourcePSR*0.5<<G4endl;
+	
+	G4Tubs* solidSourcePSR =
+	new G4Tubs("Source",                       //its name
+						 RminSourcePSR,
+						 RmaxSourcePSR,
+						 0.5*DzSourcePSR,
+						 SPhiSourceSR,
+						 DPhiSourceSR);     //its size
+	
+	G4LogicalVolume* logicSourcePSR =
+	new G4LogicalVolume(solidSourcePSR,          //its solid
+											SourcePSR_mat,           //its material
+											"Source");            //its name
+	
+	if(fSourceSelect==1) { //If i requested the Sr source
+		G4cout<<"GEOMETRY DEBUG - Pointlike Sr Source has been placed!!"<<G4endl;
+		
+		new G4PVPlacement(0,                     //no rotation
+											posSourcePSR,       //at (0,0,0)
+											logicSourcePSR,            //its logical volume
+											"Source",               //its name
+											logicWorld,            //its mother  volume
+											false,                 //no boolean operation
+											0,                     //copy number
+											checkOverlaps);        //overlaps checking
 		
 		//G4Region* sorgente = new G4Region("SourceReg");
-		logicSourceSR->SetRegion(sorgente);
-		sorgente->AddRootLogicalVolume(logicSourceSR);
+		logicSourcePSR->SetRegion(sorgente);
+		sorgente->AddRootLogicalVolume(logicSourcePSR);
 	}
-	//################################################### END SR SOURCE
+	//################################################### END POINTLIKE SR SOURCE
 	
+	//###################################################
+	// Pointlike Gamma lab Source (Co60, Ba133, Na22, Cs137)
+	//##########################
+	G4ThreeVector posSourceGamma = G4ThreeVector(0, 0, -DzSourceGamma*0.5);
+	
+	G4cout<<"GEOMETRY DEBUG - Z thickness of solidSource= "<<DzSourceGamma/mm<<", Z pos= "<<-DzSourceGamma*0.5<<G4endl;
+	
+	G4Tubs* solidSourceGamma =
+	new G4Tubs("Source",                       //its name
+						 RminSourceGamma,
+						 RmaxSourceGamma,
+						 0.5*DzSourceGamma,
+						 0*deg,
+						 360*deg);     //its size
+	
+	G4LogicalVolume* logicSourceGamma =
+	new G4LogicalVolume(solidSourceGamma,          //its solid
+											GammaSource_mat,           //its material
+											"Source");            //its name
+	
+if (fSourceSelect>=4 && fSourceSelect<=7 ) {
+		G4cout<<"GEOMETRY DEBUG - Pointlike Gamma Source has been placed!!"<<G4endl;
+		
+		new G4PVPlacement(0,                     //no rotation
+											posSourceGamma,       //at (0,0,0)
+											logicSourceGamma,            //its logical volume
+											"Source",               //its name
+											logicWorld,            //its mother  volume
+											false,                 //no boolean operation
+											0,                     //copy number
+											checkOverlaps);        //overlaps checking
+		
+		//G4Region* sorgente = new G4Region("SourceReg");
+		logicSourceGamma->SetRegion(sorgente);
+		sorgente->AddRootLogicalVolume(logicSourceGamma);
+	}
+	//################################################### END POINTLIKE SR SOURCE
 	
 	
 	//###################################################
@@ -735,7 +861,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	 }
 	 */
 	G4ThreeVector posFilter = G4ThreeVector(fX0Scan, 0, Z_resin);
-	
+//	Resin_mat=world_mat; //TOGLILO!!!
 	G4cout<<"GEOMETRY DEBUG - Z thickness of solidResin= "<<Resin_sizeZ/mm<<", Z pos= "<<Z_resin/mm<<G4endl;
 	
 	G4Box* solidResin =

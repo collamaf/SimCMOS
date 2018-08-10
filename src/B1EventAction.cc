@@ -46,8 +46,8 @@ fEdep(0.),
 fEdkin(0.),
 fno(0),
 fPreNo(0),
+fPreFilterNo(0),
 fEdepEle(0.),
-//fEdepEl(0.),
 fEdepPos(0.),
 fEdepFot(0.),
 fEnteringParticle(0),
@@ -122,10 +122,15 @@ void B1EventAction::BeginOfEventAction(const G4Event* )
 	
 	(fRunAction->GetRunEAbsComp()).clear();
 	
+	(fRunAction->GetRunPreFilterEn()).clear();
+	(fRunAction->GetRunPreFilterPart()).clear();
+
+	
 	
 	//	}
 	fno=0;
 	fPreNo=0;
+	fPreFilterNo=0;
 	
 	fEdepEle=0.;
 	fEdepPos=0;
@@ -171,14 +176,15 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 	// fill ntuple
 	
 	if(fEdep>0)analysisManager->FillNtupleDColumn(0, 0, fEdep/keV);
-	analysisManager->FillNtupleDColumn(0, 2, fPreNo);
-	analysisManager->FillNtupleDColumn(0, 5, fno); //number of hits into the detector
+	analysisManager->FillNtupleDColumn(0, 2, fPreFilterNo); //number of particles entering filter
+	analysisManager->FillNtupleDColumn(0, 5, fPreNo); //number of particles entering CMOS
+	analysisManager->FillNtupleDColumn(0, 8, fno); //number of hits into the detector
 //	if(1/*fEdepSr>0*/)analysisManager->FillNtupleDColumn(0, 10, fEdepSr/keV);
 //	if(fEdepEl>0)analysisManager->FillNtupleDColumn(0, 11, fEdepEl/keV);
 //	if(1/*fEdepY>0*/)analysisManager->FillNtupleDColumn(0, 11, fEdepY/keV);
-	analysisManager->FillNtupleDColumn(0,16, fSourceX/mm);
-	analysisManager->FillNtupleDColumn(0,17, fSourceY/mm);
-	analysisManager->FillNtupleDColumn(0,18, fSourceZ/mm);
+	analysisManager->FillNtupleDColumn(0,19, fSourceX/mm);
+	analysisManager->FillNtupleDColumn(0,20, fSourceY/mm);
+	analysisManager->FillNtupleDColumn(0,21, fSourceZ/mm);
 	/*
 	analysisManager->FillNtupleDColumn(0,19, fSourceCosX/mm);
 	analysisManager->FillNtupleDColumn(0,20, fSourceCosY/mm);
@@ -191,7 +197,7 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 	
 	if(fEdep>0) analysisManager->AddNtupleRow(0);
 	
-	if(1||evento->GetEventID()<=1e6){ //to write to proper ntuple all the source particles info
+	if(evento->GetEventID()<=1e5){ //to write to proper ntuple all the source particles info
 		analysisManager->FillNtupleDColumn(1,0, fSourceX/mm);
 		analysisManager->FillNtupleDColumn(1,1, fSourceY/mm);
 		analysisManager->FillNtupleDColumn(1,2, fSourceZ/mm);

@@ -76,7 +76,7 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 	G4bool fExtended=false;
 	G4bool fSTB=false; 
 	
-	if (fSourceSelect==1) {  //pointlike Sr
+	if (fSourceSelect==1) {  //pointlike (Sr or Co)
 		fPointLike=true;
 		fExtended=false;
 		fSTB=false;
@@ -88,6 +88,10 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 		fPointLike=false;
 		fExtended=false;
 		fSTB=true;
+	} else if (fSourceSelect>=4 && fSourceSelect<=7) { //Gamma sources
+		fPointLike=false;
+		fExtended=true;
+		fSTB=false;
 	}
 	
 	if (fSTB) {
@@ -105,6 +109,11 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 		fDZInt=0*mm;
 		fRadiusExt=8*mm;
 		fDZExt=0*mm;
+	}
+	
+	if (fSourceSelect>=4 && fSourceSelect<=7) {
+		fRadiusInt=0.5*mm;
+		fRadiusExt=0.5*mm;
 	}
 	
 	
@@ -132,10 +141,23 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 	//Stronzium
 	G4int Z = 38, A = 90;
 	if (fSourceSelect==3) Z=39; //If I need Y instead of Sr
-	if (0||fSourceSelect==4) {
-		Z=31;
-		A=68;
+	if (fSourceSelect==4) { // Co60
+		Z=27;
+		A=60;
 	}
+	if (fSourceSelect==5) { //Na
+		Z=11;
+		A=22;
+	}
+	if (fSourceSelect==6) { //Ba
+		Z=56;
+		A=133;
+	}
+	if (fSourceSelect==7) { //Cs
+		Z=55;
+		A=137;
+	}
+	
 	G4double ionCharge   = 0.*eplus;
 	G4double excitEnergy = 0.*keV;
 	
@@ -178,7 +200,8 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 			zSource = -G4UniformRand()*fZ-fDZInt-zSourceOffset;
 		}
 	}
-		
+	
+	if (fSourceSelect>=4 && fSourceSelect<=7 ) zSource=-1.5*mm; //Co60 Na Ba Cs sources are in the middle of the plastic thickness
 	
 	fParticleGun->SetParticleEnergy(0*MeV); //SetParticleEnergy uses kinetic energy
 	

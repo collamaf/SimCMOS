@@ -15,6 +15,10 @@ Source Choice:
 1 - Pointlike Sr
 2 - Extended Sr
 3 - ExtY
+4 - Co60
+5 - Na22
+6 - Ba133
+7 - Cs137
 Sensor Choice:
 1 - MT9V011
 2 - MT9V115
@@ -108,6 +112,80 @@ da CMOS/CodiceCMOS
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fil1_TBR10_ExtSr_115_Frame100.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -frameSize 488x648 -t 7 -mc
 
+```
+Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800.root -noise /Users/francesco/Documents/NewLife/Sonda/Dati/CMOS/CodiceCMOS/DatiVari/DatiDaRosa29Mag18/VariazioneMateriale_Sr/2018-05-31_MT9V115_SrRM_Int200G1T22_Nothing_0000_noise_100_0.root  -frameSize 488x648 -t 7 -mc
+
+DataAnalysis /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800_Reduced.root -frameSize 488x648  -mc
+```
+
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
+PrimEne->Sumw2()
+PrimEne->Rebin(1)
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
+PrimEne->Sumw2()
+PrimEne->Rebin(1)
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
+PrimEne->Rebin(1)
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+######## RIMOZIONE A MANO DEGLI ERRORI IN PRIMENE
+
+root -l CMOSmc_X0_Z50_NoAbs_Fil0_ExtSr_115Eff.root 
+TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
+EneIn->Sumw2()
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z50_NoAbs_Fil0_ExtSr_115Eff_Frame800_Analized.root")
+for (int ii=1; ii<= PrimEne->GetNbinsX(); ii++) cout<<PrimEne->GetBinError(ii)<<endl
+for (int ii=1; ii<= PrimEne->GetNbinsX(); ii++) PrimEne->SetBinError(ii,0)
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+
+
+B1->SetLineColor(kRed);
+B1->Draw("PreFilterEn","PreFilterPart==22","");
+B1->SetLineColor(kBlue);
+B1->Draw("PreFilterEn","PreFilterPart==11","sames");
+B1->SetLineColor(kMagenta);
+B1->Draw("PreCmosEn","PreCmosPart==22","sames");
+B1->SetLineColor(kCyan);
+B1->Draw("PreCmosEn","PreCmosPart==11","sames");
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -163,9 +241,22 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fi
 - Added QuickFlag to be passed as an argument to program to call for scaled down geometry
 - Added structure to classify energy release due to e+/e-/gamma
 
+2018.06.06 by collamaf
+- Added scoring of what enters the filter (PreFilterEn/TrackN/Part) - THERE IS SOME PROBLEM! If made by hand empty the spectrum of particles hitting the filter changes... TO BE UNDERSTOOD
+
+2018.07.25 by collamaf
+- Added Co60 source {SourceChoice= 4}
+- Whole sources volumes reorganisation
+- Added Na, Ba and Cs sources {SourceChoice= 5, 6, 7}
+
+2018.08.10 by collamaf
+- Gamma sources have now 1mm diameter (active sport)
+- Added possibility to pass "label" to filename from command line
+
+
+
 ## TO DO's
 
-- aggiungere il gallio? (cioè solo i parametri da input, magari aspettando di fare in modo che possano essere inseriti solo quelli interessanti..)
 - correct readme regarding Root file vectors
 - sistemare il fatto che con sourceselect=4 per qualche motivo piazza quella di Y.. insomma rivedere come DetCos piazza le sorgenti
 
