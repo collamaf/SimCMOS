@@ -60,22 +60,48 @@ using namespace std;
 int main(int argc,char** argv)
 {
 	
-	G4bool VisFlag=true;
-	G4bool QuickFlag=true;
+	G4bool VisFlag=false;
+	G4bool QuickFlag=false;
 
 	// Detect interactive mode (if no arguments) and define UI session
 	G4UIExecutive* ui = 0;
 
 	
-	G4double x0Scan=0, ZValue=2*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
+	G4double x0Scan=0, ZValue=1.73*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
 	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine=0;
 	
-	G4String fileName ="";
+	G4String MacroName ="";
 	G4String FileNameLabel="";
 
+	G4double DTmis=600; //in s
+	G4double AttSorg[7]={
+		350, //PSr
+		2.53e3, //ExtSr Rm
+		999, //Y - not defined
+		23.24e3, //Co60
+		16.04e3, //Na22
+		33.89e3, //Ba133
+		37.84e3, //Cs137
+	};
 	
-	G4int NoOfPrimToGen=100, Verbose=0;
+	/*
+	 2.53e3 - ExtSrRome
+	 23.24e3 - Co60
+	 16.04e3 - Na22
+	 33.89e3 - Ba133
+	 37.84e3 - Cs137
+	 1 - Pointlike Sr
+	 2 - Extended Sr
+	 3 - ExtY
+	 4 - Co60
+	 5 - Na22
+	 6 - Ba133
+	 7 - Cs137
+	 */
 	
+	G4double PixelThickness=2.5; //um
+	G4int NoOfPrimToGen=99, Verbose=0;
+
 	
 	for(int i=1;i<argc;i++)
 		if(argv[i][0] =='-')
@@ -118,9 +144,17 @@ int main(int argc,char** argv)
 			{
 				VisFlag=stoi (argv[++i], NULL);;
 			}
+			else if(option.compare("-Verbose")==0)
+			{
+				Verbose=stoi (argv[++i], NULL);;
+			}
 			else if(option.compare("-Sensor")==0)
 			{
 				SensorChoice=strtod (argv[++i], NULL);;
+			}
+			else if(option.compare("-PixT")==0)
+			{
+				PixelThickness=strtod (argv[++i], NULL);;
 			}
 			else if(option.compare("-NPrim")==0)
 			{
@@ -137,16 +171,25 @@ int main(int argc,char** argv)
 		}
 		else
 		{
-			fileName = argv[i]; //se ho trovato una macro (senza il "-" davanti) significa che NON voglio l'interattivo
+			MacroName = argv[i]; //se ho trovato una macro (senza il "-" davanti) significa che NON voglio l'interattivo
 			VisFlag=false;
 			QuickFlag=false;
 		}
-	if (QuickFlagCommandLine) QuickFlag=true;
 	
+	if (VisFlag) QuickFlag=true;
+	
+	if (NoOfPrimToGen==99 && (SourceChoice==2 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
+		NoOfPrimToGen=DTmis*AttSorg[(int)SourceChoice-1];
+	}
+	G4cout<<"\n############## \nI WILL GENERATE n= "<<NoOfPrimToGen<<" primaries \n##############"<<G4endl;
+	if (QuickFlagCommandLine) QuickFlag=true;
+
+#if 0
 	if ( VisFlag ) { //Prepare for vis
 		ui = new G4UIExecutive(argc, argv);
 	}
-	
+#endif
+
 	G4int SourceSelect=SourceChoice;
 	if (SourceSelect==1|| SourceSelect==2) SrSourceFlag=1; //if it is a Sr source... tell to DetCons
 	
@@ -177,6 +220,8 @@ int main(int argc,char** argv)
 	if (SensorChoice==2) FileNameCommonPart.append("_115");
 	if (SensorChoice==3) FileNameCommonPart.append("_60035");
 	
+		FileNameCommonPart.append("_PxT" + std::to_string((G4int)(10*PixelThickness)));
+	
 	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
 	if (QuickFlagCommandLine) FileNameCommonPart.append("_Quick"); //if it was a TEST run under vis
 
@@ -202,7 +247,8 @@ int main(int argc,char** argv)
 	
 	// Set mandatory initialization classes
 	// Detector construction
-	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SourceChoice, SensorChoice, QuickFlag)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
+
+	runManager->SetUserInitialization(new B1DetectorConstruction(x0Scan, ZValue, AbsorberDiam, AbsorberThickness, AbsorberMaterial, FilterFlag, SourceChoice, SensorChoice, QuickFlag, PixelThickness)); //DetectorConstruction needs to know if it is a SrSource to place the right geometry
 	
 	// Physics list
 	//G4VModularPhysicsList* physicsList = new QBBC;
@@ -213,6 +259,7 @@ int main(int argc,char** argv)
 	B1PhysicsList* physicsList=new B1PhysicsList;
 	physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 	runManager->SetUserInitialization(physicsList);
+	
 	
 	// User action initialization
 	//	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, CuDiam, FilterFlag, primFile, TBRvalue,SourceSelect, SourceSelect));
@@ -230,7 +277,8 @@ int main(int argc,char** argv)
 	
 	// Process macro or start UI session
 	//
-	
+
+#if 0
 	if ( ! VisFlag) {
 		// batch mode
 		G4String command = "/control/execute ";
@@ -243,6 +291,37 @@ int main(int argc,char** argv)
 		ui->SessionStart();
 		delete ui;
 	}
+#endif
+	
+	runManager->Initialize();
+
+	
+	if ( VisFlag ) { //Prepare for vis
+		ui = new G4UIExecutive(argc, argv);
+	}
+
+	if ( ! ui ) {
+		// batch mode
+		if (MacroName!="") {
+			G4String command = "/control/execute ";
+			UImanager->ApplyCommand(command+MacroName);
+		} else {
+			UImanager->ApplyCommand("/tracking/verbose " + std::to_string(Verbose));
+			UImanager->ApplyCommand("/run/beamOn " + std::to_string(NoOfPrimToGen));
+			//			UImanager->ApplyCommand("/run/beamOn 100");
+		}
+	}
+	else {
+		// interactive mode
+		UImanager->ApplyCommand("/control/execute init_vis.mac");
+		ui->SessionStart();
+		delete ui;
+	}
+	
+
+	
+	
+	
 	
 	delete visManager;
 	delete runManager;

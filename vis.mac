@@ -5,7 +5,7 @@
 # Use these open statements to open selected visualization
 #
 # Use this open statement to create an OpenGL view:
-/vis/open OGL 600x600-0+0
+/vis/open OGL 800x600-0+0
 #
 # Use this open statement to create an OpenInventor view:
 #/vis/open OI
@@ -105,8 +105,8 @@
 
 /vis/filtering/trajectories/create/encounteredVolumeFilter Vol
 /vis/filtering/trajectories/Vol/add CMOS
-#/vis/filtering/trajectories/Vol/active false
-
+/vis/filtering/trajectories/Vol/active false
+#
 /vis/modeling/trajectories/create/drawByAttribute EnCut
 /vis/modeling/trajectories/EnCut/setAttribute IKE
 

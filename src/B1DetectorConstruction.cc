@@ -50,9 +50,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4double SourceSelect, G4int SensorChoice, G4bool QuickFlag)
+B1DetectorConstruction::B1DetectorConstruction(G4double x0, G4double ZValue, G4double CuDiam, G4double CuThickness, G4int CuMaterial, G4int FilterFlag, G4double SourceSelect, G4int SensorChoice, G4bool QuickFlag, G4double PxThickness)
 : G4VUserDetectorConstruction(),
-fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fQuickFlag(QuickFlag)
+fScoringVolume(0), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fCuThickness(CuThickness), fCuMaterial(CuMaterial), fFilterFlag(FilterFlag), fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fQuickFlag(QuickFlag), fPixelThickness(PxThickness)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -205,7 +205,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	polycarbonate->AddElement(elO, 18.8758*perCent);
 	
 	G4Material* GammaSource_mat = polycarbonate;
-	
+//	GammaSource_mat=world_mat;
 	
 	G4double densityPSrSource = 0.9643*g/cm3;
 	//	G4NistManager* man = G4NistManager::Instance();
@@ -290,7 +290,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4int ScaleFactor=1;
 	if (fQuickFlag) ScaleFactor=10;
 	G4double PixelSize=5.6*um;
-	G4double PixelThickness=4.5*um;
+//	G4double PixelThickness=4.5*um;
+	G4double PixelThickness=fPixelThickness*um;
 	G4double gapX =0.01*um;
 	G4double gapY =0.01*um;
 	G4int noX = 640;
@@ -298,7 +299,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double DistFilterCmos=41*um; //distance between filter surface and cmos in sensor 2 (was 441 wtf)
 	if (fSensorChoice==2) {
 		PixelSize=1.75*um;
-		PixelThickness=4.5*um; //was 2.5 but in Stefano's thesis is 4.5, we tried also 13 but seems toomuch (2018.05.29)
+//		PixelThickness=4.5*um; //was 2.5 but in Stefano's thesis is 4.5, we tried also 13 but seems toomuch (2018.05.29)
 		noX=648;
 		noY=488;
 	}

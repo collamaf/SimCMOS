@@ -250,8 +250,10 @@ B1->Draw("PreCmosEn","PreCmosPart==11","sames");
 - Added Na, Ba and Cs sources {SourceChoice= 5, 6, 7}
 
 2018.08.10 by collamaf
-- Gamma sources have now 1mm diameter (active sport)
+- Gamma sources have now 1mm diameter (active spot)
 - Added possibility to pass "label" to filename from command line
+- No more need for macros, now number of primaries is calculated from source activity
+- Pixel thickness is now passed as argument
 
 
 

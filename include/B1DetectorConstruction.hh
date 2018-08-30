@@ -43,7 +43,7 @@ class G4LogicalVolume;
 class B1DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-	B1DetectorConstruction(G4double, G4double, G4double,G4double, G4int, G4int, G4double, G4int, G4bool);
+	B1DetectorConstruction(G4double, G4double, G4double,G4double, G4int, G4int, G4double, G4int, G4bool, G4double);
 	virtual ~B1DetectorConstruction();
 	
 	virtual G4VPhysicalVolume* Construct();
@@ -61,14 +61,15 @@ protected:
 	G4double fSourceSelect;
 	G4int fSensorChoice;
 	G4bool fQuickFlag;
+	G4double fPixelThickness;
 	
 	G4Region* sorgente = new G4Region("SourceReg");
 	G4Region* ABSRegion = new G4Region("ABSRegion");
 	G4Region* filtro = new G4Region("ResinReg");
-G4Region* cmosreg = new G4Region("CMOSReg");
+	G4Region* cmosreg = new G4Region("CMOSReg");
 	G4Region* carrierreg = new G4Region("CarrierReg");
-
-
+	
+	
 	
 };
 

@@ -167,7 +167,7 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 
 	G4int NevTot=fRunAction->GetEventNumber();
 	
-	if ((100*evento->GetEventID())%NevTot==0) FilePrimaries<<"Progress status: "<<(evento->GetEventID()/(G4double)NevTot)*100<<" %, Nev= "<<evento->GetEventID()<<", NTotEv= "<<NevTot<<G4endl;
+	if ((100*evento->GetEventID())%NevTot==0) G4cout<<"Progress status: "<<(evento->GetEventID()/(G4double)NevTot)*100<<" %, Nev= "<<evento->GetEventID()<<", NTotEv= "<<NevTot<<G4endl;
 	
 	// get analysis manager
 	
