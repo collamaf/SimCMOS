@@ -70,6 +70,7 @@ public:
 	void SetSourceCosY(G4double scy) {fSourceCosY=scy;}
 	void SetSourceCosZ(G4double scz) {fSourceCosZ=scz;}
 	void SetSourceEne(G4double sene) {fSourceEne=sene;}
+	G4double GetSourceEne() {return fSourceEne;}
 	void SetSourceIsotope(G4double siso) {fSourceIsotope=siso;}
 	
 	void AddNSourceExit(G4double snsexit) {fNSourceExit+=snsexit;}
@@ -87,10 +88,17 @@ public:
 	void ResetPassCounterCmos() {fPassCounterCmos=0;}
 	G4int GetPassCounterCmos(void) {return fPassCounterCmos;}
 	
+	void SetStoreEventIDCmosPrim(G4int trid) {fStoreEventIDCmosPrim=trid;}
+	G4int GetStoreEventIDCmosPrim(void) {return fStoreEventIDCmosPrim;}
+	void AddPassCounterCmosPrim(G4int num) {fPassCounterCmosPrim+=num;}
+	void ResetPassCounterCmosPrim() {fPassCounterCmosPrim=0;}
+	G4int GetPassCounterCmosPrim(void) {return fPassCounterCmosPrim;}
+	
 	void SetEnteringParticle(G4int part) {fEnteringParticle=part;}
 	G4int GetEnteringParticle(void) {return fEnteringParticle;}
 
-	
+	void SetPrimDecayTime( G4long time) {fPrimDecayTime=time;}
+	 G4long GetPrimDecayTime (void) {return fPrimDecayTime;}
 	//  void SetStopPosition (G4double x,G4double y, G4double z){
 	//  xstop=x;
 	//  ystop=y;
@@ -131,6 +139,7 @@ private:
 	
 	G4int fPassCounterSource;
 	G4int fPassCounterCmos;
+	G4int fPassCounterCmosPrim;
 
 	G4double fNSourceExit;
 	
@@ -146,7 +155,9 @@ private:
 	G4String fExitProcess;
 	G4int fStoreTrackIDSource;
 	G4int fStoreTrackIDCmos;
+	G4int fStoreEventIDCmosPrim;
 	std::ofstream &FilePrimaries;
+	G4long fPrimDecayTime;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -80,7 +80,7 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 		fPointLike=true;
 		fExtended=false;
 		fSTB=false;
-	} else if (fSourceSelect==2) { //extended Sr
+	} else if (fSourceSelect==2 || fSourceSelect==8 || fSourceSelect==9) { //extended Sr
 		fPointLike=false;
 		fExtended=true;
 		fSTB=false;
@@ -137,7 +137,8 @@ B1PrimaryGeneratorAction::~B1PrimaryGeneratorAction()
 
 void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 {
-	
+	G4bool FlatEle=false;
+	G4bool FlatGamma=false;
 	//Stronzium
 	G4int Z = 38, A = 90;
 	if (fSourceSelect==3) Z=39; //If I need Y instead of Sr
@@ -157,15 +158,28 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 		Z=55;
 		A=137;
 	}
+	if (fSourceSelect==8) { //flat e- distribution: 0-3 MeV
+		FlatEle=true;
+	}
+	if (fSourceSelect==9) { //flat gamma distribution: 0-1 MeV
+		FlatGamma=true;
+	}
 	
 	G4double ionCharge   = 0.*eplus;
 	G4double excitEnergy = 0.*keV;
 	
-	G4ParticleDefinition* ion
+	G4ParticleDefinition* sourceParticle
 	= G4IonTable::GetIonTable()->GetIon(Z,A,excitEnergy);
-	fParticleGun->SetParticleDefinition(ion);
-	fParticleGun->SetParticleCharge(ionCharge);
-	
+	if (FlatEle) {
+	fParticleGun->SetParticleDefinition(	G4ParticleTable::GetParticleTable()->FindParticle("e-"));
+//	fParticleGun->SetParticleCharge(ionCharge);
+	} else if (FlatGamma) {
+		fParticleGun->SetParticleDefinition(	G4ParticleTable::GetParticleTable()->FindParticle("gamma"));
+		fParticleGun->SetParticleCharge(0);
+	} else  {
+		fParticleGun->SetParticleDefinition(sourceParticle);
+		fParticleGun->SetParticleCharge(ionCharge);
+	}
 	G4double VolA=CLHEP::pi*fDZExt*(fRadiusExt*fRadiusExt-fRadiusInt*fRadiusInt);
 	G4double VolB=CLHEP::pi*fRadiusInt*fRadiusInt*fDZInt;
 	G4double VolC=CLHEP::pi*fRadiusInt*fRadiusInt*(fDZExt-fDZInt);
@@ -203,8 +217,18 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 	
 	if (fSourceSelect>=4 && fSourceSelect<=7 ) zSource=-1.5*mm; //Co60 Na Ba Cs sources are in the middle of the plastic thickness
 	
-	fParticleGun->SetParticleEnergy(0*MeV); //SetParticleEnergy uses kinetic energy
-	
+	if (FlatEle) {
+		G4double randomEne=G4UniformRand()*3;
+//		randomEne=1;
+		fParticleGun->SetParticleEnergy(randomEne*MeV); //SetParticleEnergy uses kinetic energy
+		evtPrimAction->SetSourceEne(randomEne);
+	} else if (FlatGamma) {
+		G4double randomEne=G4UniformRand()*1;
+		fParticleGun->SetParticleEnergy(randomEne*MeV); //SetParticleEnergy uses kinetic energy
+	} else {
+		fParticleGun->SetParticleEnergy(0*MeV); //SetParticleEnergy uses kinetic energy
+	}
+		
 	G4double rho = sqrt(fRadiusMin*fRadiusMin + G4UniformRand()*(fRadiusMax*fRadiusMax-fRadiusMin*fRadiusMin));   //fixed square problem by collamaf with internal radius!
 	G4double alpha = G4UniformRand()*CLHEP::pi*2.;
 
@@ -214,9 +238,20 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 	evtPrimAction->SetSourceCosY(0);
 	evtPrimAction->SetSourceCosZ(0);
 */
-	G4ThreeVector momentumDirection = G4ThreeVector(0,0,0);
-	
-	fParticleGun->SetParticleMomentumDirection(momentumDirection);
+		if (FlatEle || FlatGamma) {
+			G4double phi = G4UniformRand()*CLHEP::pi*2.;
+//			G4double costheta = G4UniformRand()*2.-1.;
+			G4double costheta = G4UniformRand();
+			G4double theta = acos(costheta);
+			G4double xDirection = sin(theta)*cos(phi);
+			G4double yDirection = sin(theta)*sin(phi);
+			G4double zDirection = costheta;
+			const G4ThreeVector momentumDirection = G4ThreeVector(xDirection,yDirection,zDirection);
+			fParticleGun->SetParticleMomentumDirection(momentumDirection);
+		} else {
+			G4ThreeVector momentumDirection = G4ThreeVector(0,0,0);
+			fParticleGun->SetParticleMomentumDirection(momentumDirection);
+		}
 	fParticleGun->SetParticlePosition(position);
 
 //	evtPrimAction->SetSourceEne(fParticleGun->GetParticleEnergy());

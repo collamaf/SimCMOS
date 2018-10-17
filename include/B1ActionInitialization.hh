@@ -35,6 +35,8 @@
 #include "globals.hh"
 /// Action initialization class.
 
+class G4VSteppingVerbose;
+
 class B1ActionInitialization : public G4VUserActionInitialization
 {
 public:
@@ -43,6 +45,9 @@ public:
 	
 	virtual void BuildForMaster() const;
 	virtual void Build() const;
+	
+	virtual G4VSteppingVerbose* InitializeSteppingVerbose() const;
+
 	
 protected:
 	G4double fX0Scan;

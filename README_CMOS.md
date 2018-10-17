@@ -9,6 +9,9 @@ make
 ./exampleB1 {CuDiam (<0->no Cu)} {CuThickness} {Cu Material 1-Cu 2-Al 3-ABS} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
 e.g.:
 ./exampleB1 0 0.3 1 1.74 1 10 2 0 2 ../run1.mac 
+
+./exampleB1 -AbsD -1 -Z 0.010 -Fil 0 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
+./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 ```
 {all distances/sizes in mm}
 Source Choice:
@@ -116,6 +119,159 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fi
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800.root -noise /Users/francesco/Documents/NewLife/Sonda/Dati/CMOS/CodiceCMOS/DatiVari/DatiDaRosa29Mag18/VariazioneMateriale_Sr/2018-05-31_MT9V115_SrRM_Int200G1T22_Nothing_0000_noise_100_0.root  -frameSize 488x648 -t 7 -mc
 
 DataAnalysis /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800_Reduced.root -frameSize 488x648  -mc
+
+
+
+################
+
+###### Efficienza sensore + filtro ##########
+root -l CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_UpFront_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_UpFront_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+##### LOCAL
+
+root -l CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+###### Efficienza sensore "nudo" ########## (GAC) PreCmosEn
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+###### Efficienza sensore "nudo" ########## (GAC) PreCmosEnPrim
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","","") 
+EneIn->Sumw2()
+EneIn->Rebin(2)
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+PrimEne->Rebin(2)
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+
+##### LOCAL
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+##### LOCAL COMBINED - PreEnePrim
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+##### LOCAL COMBINED - PreEne
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+############################# GOOD
+##### FARM COMBINED - PreEnePrim - TOT
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+##### LOCAL COMBINED - PreEnePrim - TOT
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEnPrim>>EneIn","","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+
+
+
+PrimEne->Fit("pol0","","",1200, 2300);
+
+
+Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -seedSize 9 -edge 4 -checkLocalMaximumSide 9
+
+Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root
+
+
 ```
 
 
@@ -254,6 +410,9 @@ B1->Draw("PreCmosEn","PreCmosPart==11","sames");
 - Added possibility to pass "label" to filename from command line
 - No more need for macros, now number of primaries is calculated from source activity
 - Pixel thickness is now passed as argument
+
+2018.09.17 by collamaf
+- Finally working for efficiency!!!!
 
 
 

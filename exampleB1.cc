@@ -52,6 +52,8 @@
 
 #include <stdio.h>      /* printf, NULL */
 #include <stdlib.h>
+#include "SteppingVerbose.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 using namespace std;
@@ -84,6 +86,7 @@ int main(int argc,char** argv)
 		37.84e3, //Cs137
 	};
 	
+	G4bool NoOfPrimToGenChangeFlag=false;
 	/*
 	 2.53e3 - ExtSrRome
 	 23.24e3 - Co60
@@ -97,6 +100,8 @@ int main(int argc,char** argv)
 	 5 - Na22
 	 6 - Ba133
 	 7 - Cs137
+	 8 - FlatEle 0-3MeV
+	 9 - FlatGamma 0-1 MeV
 	 */
 	
 	G4double PixelThickness=2.5; //um
@@ -178,12 +183,19 @@ int main(int argc,char** argv)
 	
 	if (VisFlag) QuickFlag=true;
 	
-	if (NoOfPrimToGen==99 && (SourceChoice==2 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
+	if (NoOfPrimToGen!=99) NoOfPrimToGenChangeFlag=true;
+	
+	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
 		NoOfPrimToGen=DTmis*AttSorg[(int)SourceChoice-1];
 	}
 	G4cout<<"\n############## \nI WILL GENERATE n= "<<NoOfPrimToGen<<" primaries \n##############"<<G4endl;
 	if (QuickFlagCommandLine) QuickFlag=true;
 
+	G4long seed = time(NULL);
+	if (1||VisFlag) seed=12345; //If vis was requested same always the same seed to have reproducibility
+	G4Random::setTheSeed(seed);
+	
+	
 #if 0
 	if ( VisFlag ) { //Prepare for vis
 		ui = new G4UIExecutive(argc, argv);
@@ -214,19 +226,24 @@ int main(int argc,char** argv)
 	if (SourceSelect==5) FileNameCommonPart.append("_PNa22");
 	if (SourceSelect==6) FileNameCommonPart.append("_PBa133");
 	if (SourceSelect==7) FileNameCommonPart.append("_PCs137");
+	if (SourceSelect==8) FileNameCommonPart.append("_FlatEle");
+	if (SourceSelect==9) FileNameCommonPart.append("_FlatGamma");
 	//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
 	
 	if (SensorChoice==1) FileNameCommonPart.append("_011");
 	if (SensorChoice==2) FileNameCommonPart.append("_115");
 	if (SensorChoice==3) FileNameCommonPart.append("_60035");
 	
-		FileNameCommonPart.append("_PxT" + std::to_string((G4int)(10*PixelThickness)));
+		FileNameCommonPart.append("_PxT" + std::to_string((G4int)(100*PixelThickness)));
 	
 	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
 	if (QuickFlagCommandLine) FileNameCommonPart.append("_Quick"); //if it was a TEST run under vis
 
 //	FileNameCommonPart.append(""); //possible final label
 	if (FileNameLabel!="") FileNameCommonPart.append("_" + FileNameLabel);
+	
+	if (NoOfPrimToGenChangeFlag) FileNameCommonPart.append("_N"+std::to_string((G4int)NoOfPrimToGen)); //if it was a TEST run under vis
+
 	
 	FileNamePrim.append(FileNameCommonPart+".dat");
 	OutFileName.append(FileNameCommonPart);
@@ -242,6 +259,8 @@ int main(int argc,char** argv)
 	//#ifdef G4MULTITHREAD
 	//  G4MTRunManager* runManager = new G4MTRunManager;
 	//#else
+//	G4VSteppingVerbose::SetInstance(new SteppingVerbose); //to use my SteppingVerbose
+
 	G4RunManager* runManager = new G4RunManager;
 	//#endif
 	

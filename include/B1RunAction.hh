@@ -94,6 +94,11 @@ public:
 
 	std::vector<G4double>& GetRunEnPre() {return RunVectorEnPre; }
 	std::vector<G4double>& GetRunPart() {return RunVectorPart; }
+	std::vector<G4double>& GetRunPreCmosX() {return RunVectorPreCmosX;}
+	std::vector<G4double>& GetRunPreCmosY() {return RunVectorPreCmosY;}
+	std::vector<G4double>& GetRunPreCmosZ() {return RunVectorPreCmosZ;}
+	std::vector<G4double>& GetRunEnPrePrim() {return RunVectorEnPrePrim; }
+	std::vector<G4double>& GetRunPreCmosTrackID() {return RunVectorPreCmosTrackID;}
 	
 	std::vector<G4double>& GetRunPreFilterEn() {return RunVectorPreFilterEn; }
 	std::vector<G4double>& GetRunPreFilterPart() {return RunVectorPreFilterPart; }
@@ -110,6 +115,9 @@ public:
 	
 	void SetMotherEnergy(G4double mene) {fMotherEnergy=mene;}
 	G4double GetMotherEnergy() {return fMotherEnergy;}
+
+	void SetMotherPart(G4double mpart) {fMotherPart=mpart;}
+	G4double GetMotherPart() {return fMotherPart;}
 	
 	void SetMotherTime(G4double mtime) {fMotherTime=mtime;}
 	G4float GetMotherTime() {return fMotherTime;}
@@ -140,6 +148,7 @@ private:
 	G4int fSensorChoice;
 
 	G4double fMotherEnergy=-10;
+	G4double fMotherPart=0;
 	G4float fMotherTime=0;
 	
 	//G4Accumulable <G4double> fEdepPhot;
@@ -160,8 +169,13 @@ private:
 	std::vector<G4double> RunVectorPartCmos;
 	
 	std::vector<G4double> RunVectorEnPre;
+	std::vector<G4double>	RunVectorEnPrePrim;
 	std::vector<G4double> RunVectorPart;
-	
+	std::vector<G4double> RunVectorPreCmosX;
+	std::vector<G4double> RunVectorPreCmosY;
+	std::vector<G4double> RunVectorPreCmosZ;
+	std::vector<G4double> RunVectorPreCmosTrackID;
+
 	std::vector<G4double> RunVectorPreFilterEn;
 	std::vector<G4double> RunVectorPreFilterPart;
 	

@@ -56,7 +56,9 @@ fPassCounterCmos(0.),
 fNSourceExit(0.),
 fStoreTrackIDSource(0),
 fStoreTrackIDCmos(0),
-FilePrimaries(file)
+fStoreEventIDCmosPrim(-10),
+FilePrimaries(file),
+fPrimDecayTime(0)
 {}
 
 
@@ -80,7 +82,12 @@ void B1EventAction::BeginOfEventAction(const G4Event* )
 	//ystop=-1000;
 	//zstop=-1000;
 	(fRunAction->GetRunEnPre()).clear();
+	(fRunAction->GetRunEnPrePrim()).clear();
 	(fRunAction->GetRunPart()).clear();
+	(fRunAction->GetRunPreCmosX()).clear();
+	(fRunAction->GetRunPreCmosY()).clear();
+	(fRunAction->GetRunPreCmosZ()).clear();
+	(fRunAction->GetRunPreCmosTrackID()).clear();
 	(fRunAction->GetRunEnCmos()).clear();
 	(fRunAction->GetRunEnCmosPrim()).clear();
 	(fRunAction->GetRunEnCmosTime()).clear();
@@ -124,6 +131,7 @@ void B1EventAction::BeginOfEventAction(const G4Event* )
 	
 	(fRunAction->GetRunPreFilterEn()).clear();
 	(fRunAction->GetRunPreFilterPart()).clear();
+	
 
 	
 	
@@ -140,7 +148,11 @@ void B1EventAction::BeginOfEventAction(const G4Event* )
 	fPassCounterCmos=0;
 	fStoreTrackIDSource=0;
 	fStoreTrackIDCmos=0;
+	fStoreEventIDCmosPrim=-10;
+	fPassCounterCmosPrim=0;
 	fEnteringParticle=0;
+	
+	fPrimDecayTime=0;
 	/*
 	 fSourceX=0;
 	 fSourceY=0;
@@ -175,16 +187,16 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 	
 	// fill ntuple
 	
-	if(fEdep>0)analysisManager->FillNtupleDColumn(0, 0, fEdep/keV);
+	if(1||fEdep>0)analysisManager->FillNtupleDColumn(0, 0, fEdep/keV);
 	analysisManager->FillNtupleDColumn(0, 2, fPreFilterNo); //number of particles entering filter
 	analysisManager->FillNtupleDColumn(0, 5, fPreNo); //number of particles entering CMOS
-	analysisManager->FillNtupleDColumn(0, 8, fno); //number of hits into the detector
+	analysisManager->FillNtupleDColumn(0, 13, fno); //number of hits into the detector
 //	if(1/*fEdepSr>0*/)analysisManager->FillNtupleDColumn(0, 10, fEdepSr/keV);
 //	if(fEdepEl>0)analysisManager->FillNtupleDColumn(0, 11, fEdepEl/keV);
 //	if(1/*fEdepY>0*/)analysisManager->FillNtupleDColumn(0, 11, fEdepY/keV);
-	analysisManager->FillNtupleDColumn(0,19, fSourceX/mm);
-	analysisManager->FillNtupleDColumn(0,20, fSourceY/mm);
-	analysisManager->FillNtupleDColumn(0,21, fSourceZ/mm);
+	analysisManager->FillNtupleDColumn(0,24, fSourceX/mm);
+	analysisManager->FillNtupleDColumn(0,25, fSourceY/mm);
+	analysisManager->FillNtupleDColumn(0,26, fSourceZ/mm);
 	/*
 	analysisManager->FillNtupleDColumn(0,19, fSourceCosX/mm);
 	analysisManager->FillNtupleDColumn(0,20, fSourceCosY/mm);
@@ -195,7 +207,7 @@ void B1EventAction::EndOfEventAction(const G4Event* evento)
 	
 	//	G4cout<<"CMOSDEBUG - SourceX scritto in root: "<<fSourceX<<G4endl<<G4endl;
 	
-	if(fEdep>0) analysisManager->AddNtupleRow(0);
+	if(1||fEdep>0) analysisManager->AddNtupleRow(0);
 	
 	if(evento->GetEventID()<=1e5){ //to write to proper ntuple all the source particles info
 		analysisManager->FillNtupleDColumn(1,0, fSourceX/mm);

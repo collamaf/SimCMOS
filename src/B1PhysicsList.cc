@@ -36,6 +36,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4RegionStore.hh"
 #include "G4EmLivermorePhysics.hh"
+#include "G4EmPenelopePhysics.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -53,6 +54,7 @@ B1PhysicsList::B1PhysicsList()
   // EM physics
 //  RegisterPhysics(new G4EmStandardPhysics());
 	RegisterPhysics(new G4EmLivermorePhysics());
+//	RegisterPhysics(new G4EmPenelopePhysics());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,9 +85,9 @@ void B1PhysicsList::SetCuts()
 	region->SetProductionCuts(cuts);
 	*/
 	G4ProductionCuts* cuts = new G4ProductionCuts;
-	cuts->SetProductionCut(0.01*mm);
+	cuts->SetProductionCut(10*um);
 	G4ProductionCuts* cutsCMOS = new G4ProductionCuts;
-	cutsCMOS->SetProductionCut(0.001*mm);
+	cutsCMOS->SetProductionCut(0.01*um);
 	
 	G4RegionStore::GetInstance()->GetRegion("ABSRegion")->SetProductionCuts(cuts);
 	G4RegionStore::GetInstance()->GetRegion("CMOSReg")->SetProductionCuts(cutsCMOS);

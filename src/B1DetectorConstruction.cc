@@ -71,6 +71,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	// d
 	G4bool checkOverlaps = false;
 	
+	
+	
 	//
 	// World
 	//
@@ -98,7 +100,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 										0,                     //copy number
 										checkOverlaps);        //overlaps checking
 	
-	
+//	./exampleB1 -AbsD -1 -Z 0.01 -Fil 0 -Source 8	-Sensor 2 -PixT 1.75 -NPrim 10000000
+//	./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8	-Sensor 2 -PixT 1.75 -NPrim 10000000
 	//###################################################################
 	//###################################################
 	// Definitions of materials
@@ -197,7 +200,9 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	else if (fCuMaterial==3) shapeCo_mat=ABS;
 //	shapeCo_mat=carrier_mat;
 	carrier_mat=FR4;
-	
+//	carrier_mat=world_mat; //to remove carrier behind CMOS
+//	pix_mat=world_mat;
+//	Cmos_mat=world_mat;
 	
 	G4Material* polycarbonate = new G4Material("Polycarbonate", density= 1.2*g/cm3, ncomponents=3); //Gamma source wheight measured 2018.07.27: 1.797g, V=1.5 cm3
 	polycarbonate->AddElement(elH, 5.5491*perCent);
@@ -296,14 +301,14 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double gapY =0.01*um;
 	G4int noX = 640;
 	G4int noY = 480;
-	G4double DistFilterCmos=41*um; //distance between filter surface and cmos in sensor 2 (was 441 wtf)
-	if (fSensorChoice==2) {
+	G4double DistFilterCmos=41*um; //distance between filter surface and cmos in sensor 2-MT9V115 (was 441 wtf)
+	if (fSensorChoice==2) { //MT9V115
 		PixelSize=1.75*um;
 //		PixelThickness=4.5*um; //was 2.5 but in Stefano's thesis is 4.5, we tried also 13 but seems toomuch (2018.05.29)
 		noX=648;
 		noY=488;
 	}
-	if (fSensorChoice==3) {
+	if (fSensorChoice==3) { //Bare SiPm
 		PixelSize=35*um;
 		PixelThickness=4.5*um;
 		noX=137;
@@ -527,13 +532,16 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 						 0.5*DzSourceExtSR,
 						 SPhiSourceSR,
 						 DPhiSourceSR);     //its size
+
+	if (fSourceSelect==8 || fSourceSelect==9) SourceExtSR_mat=world_mat;
 	
 	G4LogicalVolume* logicSourceExtSR =
 	new G4LogicalVolume(solidSourceExtSR,          //its solid
 											SourceExtSR_mat,           //its material
 											"Source");            //its name
+
 	
-	if(fSourceSelect==2) { //If i requested the Sr source
+	if(fSourceSelect==2 || fSourceSelect==8 || fSourceSelect==9) { //If i requested the Sr source
 		G4cout<<"GEOMETRY DEBUG - Ext Sr Source has been placed!!"<<G4endl;
 		
 		new G4PVPlacement(0,                     //no rotation

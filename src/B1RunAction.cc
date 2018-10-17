@@ -95,7 +95,7 @@ void B1RunAction::BeginOfRunAction(const G4Run* run)
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	
 	nbEventInRun = run->GetNumberOfEventToBeProcessed();
-	analysisManager->FillNtupleIColumn(0,28, nbEventInRun);
+	analysisManager->FillNtupleIColumn(0,33, nbEventInRun);
 
 	
 }
@@ -244,6 +244,11 @@ void B1RunAction::CreateHistogram()
 	analysisManager->CreateNtupleDColumn(0,"PreCmosTrackN");                  //2
 	analysisManager->CreateNtupleDColumn(0,"PreCmosPart", RunVectorPart); //3
 	analysisManager->CreateNtupleDColumn(0,"PreCmosEn", RunVectorEnPre); //4
+	analysisManager->CreateNtupleDColumn(0,"PreCmosX", RunVectorPreCmosX); //4
+	analysisManager->CreateNtupleDColumn(0,"PreCmosY", RunVectorPreCmosY); //4
+	analysisManager->CreateNtupleDColumn(0,"PreCmosZ", RunVectorPreCmosZ); //4
+	analysisManager->CreateNtupleDColumn(0,"PreCmosEnPrim", RunVectorEnPrePrim); //4
+	analysisManager->CreateNtupleDColumn(0,"PreCmosEventNum", RunVectorPreCmosTrackID); //4
 	analysisManager->CreateNtupleDColumn(0,"InCmosTrackN");                   //5
 	analysisManager->CreateNtupleDColumn(0,"InCmosPart", RunVectorPartCmos); //6
 	analysisManager->CreateNtupleDColumn(0,"InCmosEn", RunVectorEnCmos); //7

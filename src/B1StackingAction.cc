@@ -75,8 +75,10 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 	
 	
 	if (CreatorProcname=="RadioactiveDecay" && track->GetDynamicParticle() ->GetPDGcode()<9e8) {
+//		G4cout<<"CIAONE 1"<<G4endl;
 		runStackAction->SetMotherIsotope(track->GetParentID()-1);
 		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
+		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
 		(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
 		(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
 		(runStackAction->GetRunPartGen()).push_back(track->GetDynamicParticle() ->GetPDGcode());
@@ -84,7 +86,35 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 		(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
 		(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
 		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
+	}
+	
+	if (track->GetDynamicParticle() ->GetPDGcode()==11 && track->GetTrackID()==1) { //if direct electron source
+		//		G4cout<<"CMOSDEBUG daje= "<< track->GetKineticEnergy()/CLHEP::keV  <<G4endl;
+//		G4cout<<"CIAONE 2"<<G4endl;
+		runStackAction->SetMotherIsotope(0);
+		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
+		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
+		(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
+		(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
+		(runStackAction->GetRunPartGen()).push_back(track->GetDynamicParticle() ->GetPDGcode());
+		(runStackAction->GetRunIsotopeGen()).push_back(0);
+		(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
+		(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
+		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
+	}
+	
+	if (track->GetDynamicParticle() ->GetPDGcode()==22 && track->GetTrackID()==1) { //if direct gamma source
 		
+		runStackAction->SetMotherIsotope(0);
+		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
+		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
+		(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
+		(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
+		(runStackAction->GetRunPartGen()).push_back(track->GetDynamicParticle() ->GetPDGcode());
+		(runStackAction->GetRunIsotopeGen()).push_back(0);
+		(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
+		(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
+		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
 	}
 	
 #if 0

@@ -34,6 +34,7 @@
 #include "B1EventAction.hh"
 #include "B1SteppingAction.hh"
 #include "B1StackingAction.hh"
+#include "SteppingVerbose.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,3 +77,10 @@ void B1ActionInitialization::Build() const
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+G4VSteppingVerbose* B1ActionInitialization::InitializeSteppingVerbose() const
+{
+	return new SteppingVerbose();
+}
+

@@ -49,11 +49,11 @@
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
 #
 # Draw hits at end of event:
-#/vis/scene/add/hits
+/vis/scene/add/hits
 #
 # To draw only gammas:
-/vis/filtering/trajectories/create/particleFilter
-/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
 #
 # To invert the above, drawing all particles except gammas,
 # keep the above two lines but also add:
@@ -107,18 +107,18 @@
 /vis/filtering/trajectories/Vol/add CMOS
 /vis/filtering/trajectories/Vol/active false
 #
-/vis/modeling/trajectories/create/drawByAttribute EnCut
-/vis/modeling/trajectories/EnCut/setAttribute IKE
-
-/vis/modeling/trajectories/EnCut/addInterval interval1 0.0 keV 100 keV
-/vis/modeling/trajectories/EnCut/addInterval interval2 100 keV 10 MeV
-
-
-/vis/modeling/trajectories/EnCut/interval1/setDrawLine  1
-/vis/modeling/trajectories/EnCut/interval2/setDrawLine  1
-
-/vis/modeling/trajectories/EnCut/interval1/setLineColour red
-/vis/modeling/trajectories/EnCut/interval2/setLineColour green
+# /vis/modeling/trajectories/create/drawByAttribute EnCut
+# /vis/modeling/trajectories/EnCut/setAttribute IKE
+#
+# /vis/modeling/trajectories/EnCut/addInterval interval1 0.0 keV 100 keV
+# /vis/modeling/trajectories/EnCut/addInterval interval2 100 keV 10 MeV
+#
+#
+# /vis/modeling/trajectories/EnCut/interval1/setDrawLine  1
+# /vis/modeling/trajectories/EnCut/interval2/setDrawLine  1
+#
+# /vis/modeling/trajectories/EnCut/interval1/setLineColour red
+# /vis/modeling/trajectories/EnCut/interval2/setLineColour green
 
 
 # To get nice view
