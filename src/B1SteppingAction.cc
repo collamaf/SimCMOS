@@ -47,12 +47,12 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1SteppingAction::B1SteppingAction(B1EventAction* eventAction, B1RunAction* runAction, G4double CuDiam)
+B1SteppingAction::B1SteppingAction(B1EventAction* eventAction, B1RunAction* runAction, G4double CollHoleDiam)
 : G4UserSteppingAction(),
 fEventAction(eventAction),
 fScoringVolume(0),
 runStepAction(runAction),
-fCuDiam(CuDiam)
+fCollHoleDiam(CollHoleDiam)
 {}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -170,9 +170,9 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 	// ########################################
 	// ###################### EXITING SOURCE i.e. passing from
-	//	if( NextVol && ( (fCuDiam<0 &&  ( (ThisVol->GetName()=="SourceSR" && NextVol->GetName()=="Dummy") || (ThisVol->GetName()=="SourceExtY" && NextVol->GetName()=="Dummy"))) || ( (fCuDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source - PRE SOURCE SIMPLIFICATION 2018-07-24
+	//	if( NextVol && ( (fCollHoleDiam<0 &&  ( (ThisVol->GetName()=="SourceSR" && NextVol->GetName()=="Dummy") || (ThisVol->GetName()=="SourceExtY" && NextVol->GetName()=="Dummy"))) || ( (fCollHoleDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source - PRE SOURCE SIMPLIFICATION 2018-07-24
 	
-	if( NextVol && ( (fCuDiam<0 &&  ( (ThisVol->GetName()=="Source" && NextVol->GetName()=="Dummy"))) || ( (fCuDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source
+	if( NextVol && ( (fCollHoleDiam<0 &&  ( (ThisVol->GetName()=="Source" && NextVol->GetName()=="Dummy"))) || ( (fCollHoleDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source
 		
 		
 		if (debug) G4cout<<"STEPDEBUG!!! Uscito da source!!! "<<G4endl;

@@ -6,12 +6,13 @@ cd build
 cmake -DGeant4_DIR=$G4INSTALL ../
 make
 ./exampleB1
-./exampleB1 {CuDiam (<0->no Cu)} {CuThickness} {Cu Material 1-Cu 2-Al 3-ABS} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
+./exampleB1 {CollHoleDiam (<0->no Cu)} {CollThickness} {Cu Material 1-Cu 2-Al 3-ABS} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
 e.g.:
 ./exampleB1 0 0.3 1 1.74 1 10 2 0 2 ../run1.mac 
 
 ./exampleB1 -AbsD -1 -Z 0.010 -Fil 0 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 ./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
+
 ```
 {all distances/sizes in mm}
 Source Choice:
@@ -22,6 +23,9 @@ Source Choice:
 5 - Na22
 6 - Ba133
 7 - Cs137
+8 - Flat Ele 0-3MeV
+9 - Flat Gamma 0-1MeV
+
 Sensor Choice:
 1 - MT9V011
 2 - MT9V115
@@ -230,7 +234,7 @@ PrimEne->Divide(EneIn)
 PrimEne->Draw("") 
 
 
-
+###################################################
 ############################# GOOD
 ##### FARM COMBINED - PreEnePrim - TOT
 
@@ -261,11 +265,59 @@ PrimEne->Divide(EneIn)
 PrimEne->Draw("") 
 
 
+##### FARM COMBINED GAMMA - PreEnePrim - TOT
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEn>>EneIn","","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
+
+
+##### FARM NAKED GAMMA - PreEnePrim - TOT
+
+root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000.root 
+
+TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
+B1->Draw("PreCmosEn>>EneIn","","") 
+EneIn->Sumw2()
+TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized.root") 
+PrimEne->Sumw2()
+new TCanvas
+PrimEne->Draw()
+PrimEne->Divide(EneIn) 
+PrimEne->Draw("") 
 
 
 
 PrimEne->Fit("pol0","","",1200, 2300);
 
+FARM WITH CREAEFF.C
+
+## GammaFilter
+ .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
+ 
+ ## GammaNoFilter
+
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
+
+## LowEneGammaNoFilter
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
+
+## LowEneGammaFilter
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
+
+## EleFilter
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
+
+## EleFilter
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -seedSize 9 -edge 4 -checkLocalMaximumSide 9
 

@@ -48,14 +48,14 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1RunAction::B1RunAction(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, G4double TBR, G4int SourceSelect, G4int SensorChoice, G4String FileName)
+B1RunAction::B1RunAction(G4double x0, G4double ZValue, G4double CollHoleDiam, G4int FilterFlag, G4double TBR, G4int SourceSelect, G4int SensorChoice, G4String FileName)
 : G4UserRunAction(),
 fEdep("Edep", 0.),
 fEdep2("Edep2", 0.),
 fEdkin("Edkin", 0.)
 , fX0Scan(x0)
 , fZValue(ZValue)
-, fCuDiam(CuDiam)
+, fCollHoleDiam(CollHoleDiam)
 , fFilterFlag(FilterFlag)
 , fTBR(TBR)
 , fSourceSelect(SourceSelect)
@@ -208,8 +208,8 @@ void B1RunAction::CreateHistogram()
 	G4String fileNameBase = "CMOSmc";
 	G4String fileName;
 	
-	if (fCuDiam>=0){
-		fileName= fileNameBase + "X"+  std::to_string((G4int)fX0Scan) + "_Z" + std::to_string((G4int)(100*fZValue)) + "_CuD" + std::to_string((G4int)fCuDiam) + "_Fil" + std::to_string((G4int)fFilterFlag) + "_TBR" + std::to_string((G4int)(10*fTBR));
+	if (fCollHoleDiam>=0){
+		fileName= fileNameBase + "X"+  std::to_string((G4int)fX0Scan) + "_Z" + std::to_string((G4int)(100*fZValue)) + "_CuD" + std::to_string((G4int)fCollHoleDiam) + "_Fil" + std::to_string((G4int)fFilterFlag) + "_TBR" + std::to_string((G4int)(10*fTBR));
 	}
 	else {
 		fileName= fileNameBase + "X"+  std::to_string((G4int)fX0Scan) + "_Z" + std::to_string((G4int)(100*fZValue)) + "_NOCuD" + "_Fil" + std::to_string((G4int)fFilterFlag) + "_TBR" + std::to_string((G4int)(10*fTBR));
@@ -257,10 +257,7 @@ void B1RunAction::CreateHistogram()
 	analysisManager->CreateNtupleDColumn(0,"InCmosX", RunVectorXCmos); //8
 	analysisManager->CreateNtupleDColumn(0,"InCmosY", RunVectorYCmos); //9
 	analysisManager->CreateNtupleDColumn(0,"InCmosZ", RunVectorZCmos); //10
-//	analysisManager->CreateNtupleDColumn(0,"InCmosEnSr");
-//	analysisManager->CreateNtupleDColumn(0,"InCmosEnY");
 	analysisManager->CreateNtupleDColumn(0,"PixelID", RunVectorPixNo); //11
-//	analysisManager->CreateNtupleDColumn(0,"EDepInPixel", RunVectorPixEneDep); //12
 	analysisManager->CreateNtupleDColumn(0,"PixXPos", RunVectorPixXpos); //13
 	analysisManager->CreateNtupleDColumn(0,"PixYPos", RunVectorPixYpos); //14
 	analysisManager->CreateNtupleDColumn(0,"SourceX");                           //14
@@ -276,30 +273,15 @@ void B1RunAction::CreateHistogram()
 	analysisManager->CreateNtupleDColumn(0,"SourceIsotope", RunVectorIsotopeGen); //21
 	analysisManager->CreateNtupleIColumn(0,"Nev");							//22
 
-
-	/*
-	analysisManager->CreateNtupleDColumn(0,"SourceCosX");                           //19
-	analysisManager->CreateNtupleDColumn(0,"SourceCosY");                           //20
-	analysisManager->CreateNtupleDColumn(0,"SourceCosZ");                           //21
-	analysisManager->CreateNtupleDColumn(0,"SourceEne");                           //22
-	analysisManager->CreateNtupleDColumn(0,"SourceIsotope");                           //23
-	*/
-	
-	
 	analysisManager->CreateNtupleDColumn(1,"AllX");                           //0
 	analysisManager->CreateNtupleDColumn(1,"AllY");                           //1
 	analysisManager->CreateNtupleDColumn(1,"AllZ");                           //2
-//	analysisManager->CreateNtupleDColumn(1,"AllCosX");                           //3
-//	analysisManager->CreateNtupleDColumn(1,"AllCosY");                           //4
-//	analysisManager->CreateNtupleDColumn(1,"AllCosZ");                           //5
 	analysisManager->CreateNtupleDColumn(1,"AllCosX", RunVectorCosX);                           //3
 	analysisManager->CreateNtupleDColumn(1,"AllCosY", RunVectorCosY);                           //4
 	analysisManager->CreateNtupleDColumn(1,"AllCosZ", RunVectorCosZ);                           //5
 	
-	//	analysisManager->CreateNtupleDColumn(1,"AllEne");                           //6
 	analysisManager->CreateNtupleDColumn(1,"AllEne", RunVectorEnGen);                           //6
 	analysisManager->CreateNtupleDColumn(1,"AllPart", RunVectorPartGen);                           //6
-//	analysisManager->CreateNtupleDColumn(1,"AllIsotope");                           //7
 	analysisManager->CreateNtupleDColumn(1,"AllIsotope", RunVectorIsotopeGen);                           //7
 	analysisManager->CreateNtupleDColumn(1,"ExitX", RunVectorXExit);                           //8
 	analysisManager->CreateNtupleDColumn(1,"ExitY", RunVectorYExit);                           //9
@@ -313,7 +295,6 @@ void B1RunAction::CreateHistogram()
 	analysisManager->CreateNtupleDColumn(1,"ExitParentID", RunVectorParentIDExit);                           //16
 	analysisManager->CreateNtupleIColumn(1,"ExitProcess", RunExitProcess); //17
 	analysisManager->CreateNtupleDColumn(1,"ExitTrackN"); //18
-	//	analysisManager->CreateNtupleDColumn(1,"ExitProcess", RunVectorParentIDExit); //16
 
 	analysisManager->FinishNtuple(0);
 	analysisManager->FinishNtuple(1);

@@ -50,7 +50,7 @@
 #include "G4UserLimits.hh"
 #include "G4StepLimiterPhysics.hh"
 
-#include <stdio.h>      /* printf, NULL */
+#include <stdio.h>
 #include <stdlib.h>
 #include "SteppingVerbose.hh"
 
@@ -67,7 +67,6 @@ int main(int argc,char** argv)
 
 	// Detect interactive mode (if no arguments) and define UI session
 	G4UIExecutive* ui = 0;
-
 	
 	G4double x0Scan=0, ZValue=1.73*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
 	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine=0;
@@ -107,7 +106,6 @@ int main(int argc,char** argv)
 	G4double PixelThickness=2.5; //um
 	G4int NoOfPrimToGen=99, Verbose=0;
 
-	
 	for(int i=1;i<argc;i++)
 		if(argv[i][0] =='-')
 		{
@@ -194,13 +192,6 @@ int main(int argc,char** argv)
 	G4long seed = time(NULL);
 	if (1||VisFlag) seed=12345; //If vis was requested same always the same seed to have reproducibility
 	G4Random::setTheSeed(seed);
-	
-	
-#if 0
-	if ( VisFlag ) { //Prepare for vis
-		ui = new G4UIExecutive(argc, argv);
-	}
-#endif
 
 	G4int SourceSelect=SourceChoice;
 	if (SourceSelect==1|| SourceSelect==2) SrSourceFlag=1; //if it is a Sr source... tell to DetCons
@@ -228,7 +219,6 @@ int main(int argc,char** argv)
 	if (SourceSelect==7) FileNameCommonPart.append("_PCs137");
 	if (SourceSelect==8) FileNameCommonPart.append("_FlatEle");
 	if (SourceSelect==9) FileNameCommonPart.append("_FlatGamma");
-	//	if (SourceSelect==4) FileNameCommonPart.append("_ExtGa_Diam" + std::to_string((G4int)SourceDiameter) + "_Dz" + std::to_string((G4int)SourceThickness));
 	
 	if (SensorChoice==1) FileNameCommonPart.append("_011");
 	if (SensorChoice==2) FileNameCommonPart.append("_115");
@@ -239,15 +229,12 @@ int main(int argc,char** argv)
 	if (VisFlag) FileNameCommonPart.append("TEST"); //if it was a TEST run under vis
 	if (QuickFlagCommandLine) FileNameCommonPart.append("_Quick"); //if it was a TEST run under vis
 
-//	FileNameCommonPart.append(""); //possible final label
 	if (FileNameLabel!="") FileNameCommonPart.append("_" + FileNameLabel);
 	
 	if (NoOfPrimToGenChangeFlag) FileNameCommonPart.append("_N"+std::to_string((G4int)NoOfPrimToGen)); //if it was a TEST run under vis
-
 	
 	FileNamePrim.append(FileNameCommonPart+".dat");
 	OutFileName.append(FileNameCommonPart);
-	
 	
 	std::ofstream primFile(FileNamePrim, std::ios::out);
 	
@@ -260,7 +247,6 @@ int main(int argc,char** argv)
 	//  G4MTRunManager* runManager = new G4MTRunManager;
 	//#else
 //	G4VSteppingVerbose::SetInstance(new SteppingVerbose); //to use my SteppingVerbose
-
 	G4RunManager* runManager = new G4RunManager;
 	//#endif
 	
@@ -279,10 +265,9 @@ int main(int argc,char** argv)
 	physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 	runManager->SetUserInitialization(physicsList);
 	
-	
 	// User action initialization
-	//	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, CuDiam, FilterFlag, primFile, TBRvalue,SourceSelect, SourceSelect));
-	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, AbsorberDiam, FilterFlag, primFile, TBRvalue, SourceSelect, SensorChoice, OutFileName));
+	//	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, CollHoleDiam, FilterFlag, primFile, TBRvalue,SourceSelect, SourceSelect));
+	runManager->SetUserInitialization(new B1ActionInitialization(x0Scan, ZValue, AbsorberDiam, FilterFlag, TBRvalue, SourceSelect, SensorChoice, OutFileName));
 	
 	// Initialize visualization
 	//
@@ -294,27 +279,8 @@ int main(int argc,char** argv)
 	// Get the pointer to the User Interface manager
 	G4UImanager* UImanager = G4UImanager::GetUIpointer();
 	
-	// Process macro or start UI session
-	//
-
-#if 0
-	if ( ! VisFlag) {
-		// batch mode
-		G4String command = "/control/execute ";
-		//		G4String fileName = argv[19];
-		UImanager->ApplyCommand(command+fileName);
-	}
-	else {
-		// interactive mode
-		UImanager->ApplyCommand("/control/execute init_vis.mac");
-		ui->SessionStart();
-		delete ui;
-	}
-#endif
-	
 	runManager->Initialize();
 
-	
 	if ( VisFlag ) { //Prepare for vis
 		ui = new G4UIExecutive(argc, argv);
 	}
@@ -336,12 +302,7 @@ int main(int argc,char** argv)
 		ui->SessionStart();
 		delete ui;
 	}
-	
 
-	
-	
-	
-	
 	delete visManager;
 	delete runManager;
 }

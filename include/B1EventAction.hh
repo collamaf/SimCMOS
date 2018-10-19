@@ -43,7 +43,7 @@ class B1RunAction;
 class B1EventAction : public G4UserEventAction
 {
 public:
-	B1EventAction(B1RunAction* runAction, std::ofstream &);
+	B1EventAction(B1RunAction* runAction);
 	virtual ~B1EventAction();
 	
 	virtual void BeginOfEventAction(const G4Event* event);
@@ -156,7 +156,6 @@ private:
 	G4int fStoreTrackIDSource;
 	G4int fStoreTrackIDCmos;
 	G4int fStoreEventIDCmosPrim;
-	std::ofstream &FilePrimaries;
 	G4long fPrimDecayTime;
 };
 

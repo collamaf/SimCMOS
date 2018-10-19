@@ -54,9 +54,9 @@ protected:
 	G4LogicalVolume*  fScoringVolume;
 	G4double fX0Scan;
 	G4double fZValue;
-	G4double fCuDiam;
-	G4double fCuThickness;
-	G4int fCuMaterial;
+	G4double fCollHoleDiam;
+	G4double fCollThickness;
+	G4int fCollMaterial;
 	G4int fFilterFlag;
 	G4double fSourceSelect;
 	G4int fSensorChoice;
