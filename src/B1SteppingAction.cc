@@ -71,17 +71,14 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 	G4int debug=0;
 	G4int EvtNumber = G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->GetEventID();
-
+	
 	G4bool newDebug = false;
-
-	// ########################################
+	
+	// ###########################################################################
 	// ###################### ENTERING CMOS
 	
-	//	if((NextVol && ThisVol->GetName()=="Resin" && NextVol->GetName()=="CMOS")|| (NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="CMOS")) { //what enters CMOS (either from Resin or world) before 2018.05.29
-//	if((NextVol && ThisVol->GetName()=="DummyCMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS from front after 2018.05.29
-	if((NextVol && ThisVol->GetName()!="CMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS from wherever - 2018.10.10
-		if (debug) G4cout<<"STEPDEBUG!!! Entrato in CMOS!!! "<<G4endl;
-		
+	//	if((NextVol && ThisVol->GetName()=="DummyCMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS from front after 2018.05.29
+	if((NextVol && ThisVol->GetName()!="CMOS" && NextVol->GetName()=="CMOS")) { //what enters CMOS from wherever - 2018.10.10 - "Good" one for Efficiencies
 		if (debug) G4cout<<"\nSTEPDEBUG\n Particella entrata in CMOS da dummy - fEventAction->GetEnteringParticle() ERA = "<<fEventAction->GetEnteringParticle();
 		
 		fEventAction->SetEnteringParticle(step->GetTrack()->GetDynamicParticle() ->GetPDGcode());
@@ -89,26 +86,19 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		
 		if (fEventAction->GetStoreTrackIDCmos()==step->GetTrack()->GetTrackID()) { //if I already saw this track entering CMOS...
 			fEventAction->AddPassCounterCmos(1);  //increase the counter
-			if (1) G4cout<<"STEPDEBUG!!! Già entrata!!! "<<step->GetTrack()->GetTrackID()<<G4endl;
-			//			G4cout<<"CMOSDEBUG CONTROLLA "<<fEventAction->GetStoreTrackIDCmos()<<", PassCounter= "<<fEventAction->GetPassCounterCmos()<<G4endl;
+			if (debug) G4cout<<"STEPDEBUG!!! Già entrata!!! "<<step->GetTrack()->GetTrackID()<<G4endl;
 		}else {
 			fEventAction->SetStoreTrackIDCmos(step->GetTrack()->GetTrackID());
-			//			G4cout<<"CMOSDEBUG PRIMO PASSAGGIO!! "<<fEventAction->GetStoreTrackIDCmos()<<", PassCounter= "<<fEventAction->GetPassCounterCmos()<<G4endl;
-			//            if (fEventAction->GetPassCounter()!=0) G4cout<<"MERDAAAAA Primo passaggio di"<<fEventAction->GetStoreTrackID()<<" ma con PassCounter= "<<fEventAction->GetPassCounter()<<G4endl;
 		}
-		if (newDebug) G4cout<<"CIAONE!!! Evento numero "<<EvtNumber<<G4endl;
-		if (newDebug) G4cout<<"CIAONE!!! GetStoreEventIDCmosPrim "<<fEventAction->GetStoreEventIDCmosPrim()<<G4endl;
 
 		if (fEventAction->GetStoreEventIDCmosPrim() ==  EvtNumber) {
 			fEventAction->AddPassCounterCmosPrim(1);
-			if (newDebug) G4cout<<"CIAONE!!! evento gia visto !!! "<<EvtNumber<<G4endl;
-
+			if (newDebug) G4cout<<"CIAONE!!! evento gia visto dare segnale in COS!!! "<<EvtNumber<<G4endl;
+			
 		} else {
 			fEventAction->SetStoreEventIDCmosPrim(EvtNumber);
-			if (newDebug) G4cout<<"CIAONE!!! Nuovo evento, Incremento contatore !!! "<<EvtNumber<<G4endl;
+			if (newDebug) G4cout<<"CIAONE!!! Nuovo evento che dà segnale in CMOS, Incremento contatore !!! "<<EvtNumber<<G4endl;
 		}
-		
-		
 		
 		// Salvo le info solo della prima volta che una particella entra nel CMOS
 		if (fEventAction->GetPassCounterCmos()==0) {
@@ -120,22 +110,19 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 			(runStepAction->GetRunPreCmosX()).push_back(step->GetPostStepPoint()->GetPosition().x()/mm);
 			(runStepAction->GetRunPreCmosY()).push_back(step->GetPostStepPoint()->GetPosition().y()/mm);
 			(runStepAction->GetRunPreCmosZ()).push_back(step->GetPostStepPoint()->GetPosition().z()/mm);
-
+			
 			(runStepAction->GetRunPreCmosTrackID()).push_back(fEventAction->GetPassCounterCmosPrim());
-			//		fEventAction->AddEdkin(eKinPre); //credo fosse eredità dell'esempio di base che contava l'energia depositata...
-//			G4cout<<"CIAONE trackID traccia entrante in CMOS = "<<step->GetTrack()->GetTrackID()<<G4endl;
 		}
 		
 		if (fEventAction->GetPassCounterCmos()==0 && fEventAction->GetPassCounterCmosPrim()==0) {
 			(runStepAction->GetRunEnPrePrim()).push_back(fEventAction->GetSourceEne()/keV);
 		}
 	}
-	
 	// ###################### END ENTERING CMOS
-	// ########################################
+	// ###########################################################################
 	
 	
-	// ########################################
+	// ###########################################################################
 	// ###################### ENTERING FILTER
 	
 	if((NextVol && ThisVol->GetName()=="World" && NextVol->GetName()=="Resin")) { //what enters Resin
@@ -148,32 +135,13 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	}
 	
 	// ###################### END ENTERING FILTER
-	// ########################################
+	// ###########################################################################
 	
-	
-#if 0
-	const G4VProcess* process
-	= step->GetPostStepPoint()->GetProcessDefinedStep();
-	
-	if (0&&step->GetTrack()->GetTrackID()==1 && process && process->GetProcessName()=="RadioactiveDecay") {
-		G4cout<<"Decadimento radiattivo! tempo globale= "<<step->GetTrack()->GetGlobalTime()/ns<<" ns"<<G4endl;
-		fEventAction->SetPrimDecayTime(step->GetTrack()->GetGlobalTime()/ns);
-	}
-#endif
-	
-	
-	
-	
-	
+	// ###########################################################################
+	// ###################### EXITING SOURCE i.e.
 	//Modified on 2017-11-17 by collamaf: now the condition works for both cases: with or without Cu collimator.
 	//If there is not collimator save what goes from source to dummy. If there is a collimator save what goes from world (the hole) into dummy
-	
-	// ########################################
-	// ###################### EXITING SOURCE i.e. passing from
-	//	if( NextVol && ( (fCollHoleDiam<0 &&  ( (ThisVol->GetName()=="SourceSR" && NextVol->GetName()=="Dummy") || (ThisVol->GetName()=="SourceExtY" && NextVol->GetName()=="Dummy"))) || ( (fCollHoleDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source - PRE SOURCE SIMPLIFICATION 2018-07-24
-	
 	if( NextVol && ( (fCollHoleDiam<0 &&  ( (ThisVol->GetName()=="Source" && NextVol->GetName()=="Dummy"))) || ( (fCollHoleDiam>=0 &&   (ThisVol->GetName()=="CuCollimator" && NextVol->GetName()=="Dummy") ) )) ) { //what actually exits the source
-		
 		
 		if (debug) G4cout<<"STEPDEBUG!!! Uscito da source!!! "<<G4endl;
 		
@@ -188,8 +156,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		// Salvo le info solo della prima volta che una particella esce dalla sorgente
 		if (fEventAction->GetPassCounterSource()==0) {
 			if (debug) G4cout<<"STEPDEBUG!!! Nuova traccia uscente la sorgente!!! "<<G4endl;
-//			if (step->GetPostStepPoint()->GetKineticEnergy()/keV<50) G4cout<<"STEPDEBUG!!! Nuova traccia uscente la sorgente con <50keV!!! "<<G4endl;
-
+			//			if (step->GetPostStepPoint()->GetKineticEnergy()/keV<50) G4cout<<"STEPDEBUG!!! Nuova traccia uscente la sorgente con <50keV!!! "<<G4endl;
+			
 			fEventAction->AddNSourceExit(1);
 			(runStepAction->GetRunEnExit()).push_back(step->GetPostStepPoint()->GetKineticEnergy()/keV);
 			(runStepAction->GetRunXExit()).push_back(step->GetPostStepPoint()->GetPosition().x()/mm);
@@ -214,29 +182,30 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 		fScoringVolume = detectorConstruction->GetScoringVolume();
 	}
-	
-	if (0 && runStepAction->GetMotherIsotope() != 0 && runStepAction->GetMotherIsotope() !=1) G4cout<<"STEPDEBUG PROVA STEPPING  MotherIsotope Val= "<< runStepAction->GetMotherIsotope()
-		<<G4endl;
+
 	
 	// get volume of the current step
 	G4LogicalVolume* volume
 	= step->GetPreStepPoint()->GetTouchableHandle()
 	->GetVolume()->GetLogicalVolume();
 	
+	// ###########################################################################
+	// ###################### If I want to keep some kind of event for visualization
+	
 	G4Event* evt = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
-
 	if (ThisVol->GetName()=="DummyCMOS" && step->GetTrack()->GetDynamicParticle() ->GetPDGcode()==22 && (NextVol && NextVol->GetName()=="CMOS")) {
 		evt->KeepTheEvent();
 	}
-	
-	if (debug) {
+	// ###########################################################################
+
+	if (debug) { //Debug time stuff
 		G4cout<<"CIAONE GlobalT [ns]= "<<std::setprecision(30) << step->GetTrack()->GetGlobalTime()/ns<<G4endl;
 		G4cout<<"GlobalT [ns]= "<<step->GetTrack()->GetGlobalTime()/ns<<G4endl;
 		G4cout<<" GetPrimDecayTime [ns]= " << fEventAction->GetPrimDecayTime()/ns<<G4endl;
 		G4cout<<"LocalT= " <<  G4BestUnit(step->GetTrack()->GetLocalTime(),"Time") <<G4endl;
 	}
 	
-	// ########################################
+	// ###########################################################################
 	// ###################### INSIDE CMOS - Per each hit into sensitive detector
 	// check if we are in scoring volume
 	if (volume== fScoringVolume) { //fScoringVolume is "logicPix"
@@ -254,7 +223,6 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		if (CopyNB>0) {
 			//fill vectors
 			(runStepAction->GetRunPixNo()).push_back(CopyNB);
-			//			(runStepAction->GetRunPixEneDep()).push_back(step->GetTotalEnergyDeposit()/keV);
 			(runStepAction->GetRunPixXpos()).push_back(pixCenter.getX()/mm);
 			(runStepAction->GetRunPixYpos()).push_back(pixCenter.getY()/mm);
 		}
@@ -268,11 +236,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		(runStepAction->GetRunEnCmos()).push_back(step->GetTotalEnergyDeposit()/keV);
 		(runStepAction->GetRunEnCmosPrim()).push_back(runStepAction->GetMotherEnergy());
 		//		(runStepAction->GetRunEnCmosTime()).push_back(step->GetTrack()->GetLocalTime()/ns);
-
 		//		(runStepAction->GetRunEnCmosTime()).push_back(step->GetTrack()->GetGlobalTime()/ns-runStepAction->GetMotherTime());
-
 		(runStepAction->GetRunEnCmosTime()).push_back(step->GetTrack()->GetGlobalTime()/ns-fEventAction->GetPrimDecayTime());
-
 		//		G4cout<<"CMOSDEBUG  MotherTime= "<< runStepAction->GetMotherTime()<<" PostDiff= "<<  step->GetTrack()->GetGlobalTime()/ns-runStepAction->GetMotherTime() <<G4endl;
 		(runStepAction->GetRunXCmos()).push_back(step->GetPreStepPoint()->GetPosition().x()/mm);
 		(runStepAction->GetRunYCmos()).push_back(step->GetPreStepPoint()->GetPosition().y()/mm);
@@ -295,6 +260,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 		
 		fEventAction->AddEdep(edepStep);
 	}
+	// ###########################################################################
+
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

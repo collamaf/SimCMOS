@@ -43,7 +43,7 @@ class G4Run;
 class B1RunAction : public G4UserRunAction
 {
 public:
-	B1RunAction(G4double, G4double, G4double, G4int, G4double, G4int, G4int, G4String);
+	B1RunAction(G4String);
 	virtual ~B1RunAction();
 	
 	// virtual G4Run* GenerateRun();
@@ -57,50 +57,50 @@ public:
 	// void AddEdepEl (G4double edepEl);
 	
 	
-	std::vector<G4double>& GetRunEnCmos() {return RunVectorEnCmos; }
-	std::vector<G4double>& GetRunEnCmosPrim() {return RunVectorEnCmosPrim; }
-	std::vector<G4float>& GetRunEnCmosTime() {return RunVectorEnCmosTime; }
-	std::vector<G4double>& GetRunXCmos() {return RunVectorXCmos; }
-	std::vector<G4double>& GetRunYCmos() {return RunVectorYCmos; }
-	std::vector<G4double>& GetRunZCmos() {return RunVectorZCmos; }
-	std::vector<G4double>& GetRunPartCmos() {return RunVectorPartCmos; }
+	std::vector<G4double>& GetRunEnCmos() {return fRunEnCmos; }
+	std::vector<G4double>& GetRunEnCmosPrim() {return fRunEnCmosPrim; }
+	std::vector<G4float>& GetRunEnCmosTime() {return fRunEnCmosTime; }
+	std::vector<G4double>& GetRunXCmos() {return fRunXCmos; }
+	std::vector<G4double>& GetRunYCmos() {return fRunYCmos; }
+	std::vector<G4double>& GetRunZCmos() {return fRunZCmos; }
+	std::vector<G4double>& GetRunPartCmos() {return fRunPartCmos; }
 	
-	std::vector<G4double>& GetRunEnExit() {return RunVectorEnExit; }
-	std::vector<G4double>& GetRunXExit() {return RunVectorXExit; }
-	std::vector<G4double>& GetRunYExit() {return RunVectorYExit; }
-	std::vector<G4double>& GetRunZExit() {return RunVectorZExit; }
-	std::vector<G4double>& GetRunCosXExit() {return RunVectorCosXExit; }
-	std::vector<G4double>& GetRunCosYExit() {return RunVectorCosYExit; }
-	std::vector<G4double>& GetRunCosZExit() {return RunVectorCosZExit; }
-	std::vector<G4double>& GetRunPartExit() {return RunVectorPartExit; }
-	std::vector<G4double>& GetRunParentIDExit() {return RunVectorParentIDExit; }
+	std::vector<G4double>& GetRunEnExit() {return fRunEnExit; }
+	std::vector<G4double>& GetRunXExit() {return fRunXExit; }
+	std::vector<G4double>& GetRunYExit() {return fRunYExit; }
+	std::vector<G4double>& GetRunZExit() {return fRunZExit; }
+	std::vector<G4double>& GetRunCosXExit() {return fRunCosXExit; }
+	std::vector<G4double>& GetRunCosYExit() {return fRunCosYExit; }
+	std::vector<G4double>& GetRunCosZExit() {return fRunCosZExit; }
+	std::vector<G4double>& GetRunPartExit() {return fRunPartExit; }
+	std::vector<G4double>& GetRunParentIDExit() {return fRunParentIDExit; }
 	
-	std::vector<G4int>& GetRunExitProcess() {return RunExitProcess; }
+	std::vector<G4int>& GetRunExitProcess() {return fRunExitProcess; }
 	
-	std::vector<G4double>& GetRunCosX() {return RunVectorCosX; }
-	std::vector<G4double>& GetRunCosY() {return RunVectorCosY; }
-	std::vector<G4double>& GetRunCosZ() {return RunVectorCosZ; }
-	std::vector<G4double>& GetRunEnGen() {return RunVectorEnGen; }
-	std::vector<G4double>& GetRunPartGen() {return RunVectorPartGen; }
-	std::vector<G4double>& GetRunIsotopeGen() {return RunVectorIsotopeGen; }
+	std::vector<G4double>& GetRunCosX() {return fRunCosX; }
+	std::vector<G4double>& GetRunCosY() {return fRunCosY; }
+	std::vector<G4double>& GetRunCosZ() {return fRunCosZ; }
+	std::vector<G4double>& GetRunEnGen() {return fRunEnGen; }
+	std::vector<G4double>& GetRunPartGen() {return fRunPartGen; }
+	std::vector<G4double>& GetRunIsotopeGen() {return fRunIsotopeGen; }
 	
-	std::vector<G4double>& GetRunEAbsComp() {return RunVectorEAbsComp; }
+	std::vector<G4double>& GetRunEAbsComp() {return fRunEAbsComp; }
 
-	std::vector<G4double>& GetRunEnPre() {return RunVectorEnPre; }
-	std::vector<G4double>& GetRunPart() {return RunVectorPart; }
-	std::vector<G4double>& GetRunPreCmosX() {return RunVectorPreCmosX;}
-	std::vector<G4double>& GetRunPreCmosY() {return RunVectorPreCmosY;}
-	std::vector<G4double>& GetRunPreCmosZ() {return RunVectorPreCmosZ;}
-	std::vector<G4double>& GetRunEnPrePrim() {return RunVectorEnPrePrim; }
-	std::vector<G4double>& GetRunPreCmosTrackID() {return RunVectorPreCmosTrackID;}
+	std::vector<G4double>& GetRunEnPre() {return fRunEnPre; }
+	std::vector<G4double>& GetRunPart() {return fRunPart; }
+	std::vector<G4double>& GetRunPreCmosX() {return fRunPreCmosX;}
+	std::vector<G4double>& GetRunPreCmosY() {return fRunPreCmosY;}
+	std::vector<G4double>& GetRunPreCmosZ() {return fRunPreCmosZ;}
+	std::vector<G4double>& GetRunEnPrePrim() {return fRunEnPrePrim; }
+	std::vector<G4double>& GetRunPreCmosTrackID() {return fRunPreCmosTrackID;}
 	
-	std::vector<G4double>& GetRunPreFilterEn() {return RunVectorPreFilterEn; }
-	std::vector<G4double>& GetRunPreFilterPart() {return RunVectorPreFilterPart; }
+	std::vector<G4double>& GetRunPreFilterEn() {return fRunPreFilterEn; }
+	std::vector<G4double>& GetRunPreFilterPart() {return fRunPreFilterPart; }
 	
-	std::vector<G4double>& GetRunPixNo() {return RunVectorPixNo; }
-//	std::vector<G4double>& GetRunPixEneDep() {return RunVectorPixEneDep; }
-	std::vector<G4double>& GetRunPixXpos() {return RunVectorPixXpos; }
-	std::vector<G4double>& GetRunPixYpos() {return RunVectorPixYpos; }
+	std::vector<G4double>& GetRunPixNo() {return fRunPixNo; }
+//	std::vector<G4double>& GetRunPixEneDep() {return fRunPixEneDep; }
+	std::vector<G4double>& GetRunPixXpos() {return fRunPixXpos; }
+	std::vector<G4double>& GetRunPixYpos() {return fRunPixYpos; }
 	
 	G4int GetEventNumber() {return nbEventInRun;}
 	
@@ -116,37 +116,19 @@ public:
 	void SetMotherTime(G4double mtime) {fMotherTime=mtime;}
 	G4float GetMotherTime() {return fMotherTime;}
 	
-	
-	/*
-	 std::vector<G4double>& GetSourceX() {return RunVectorSourceX; }
-	 std::vector<G4double>& GetSourceY() {return RunVectorSourceY; }
-	 std::vector<G4double>& GetSourceZ() {return RunVectorSourceZ; }
-	 std::vector<G4double>& GetSourceEne() {return RunVectorSourceEne; }
-	 */
-	
-	
+
 private:
 	G4Accumulable<G4double> fEdep;
 	G4Accumulable<G4double> fEdep2;
 	G4Accumulable <G4double> fEdkin;
 	
-	G4double fX0Scan;
-	G4double fZValue;
-	G4double fCollHoleDiam;
-	G4int fFilterFlag;
 	G4int nbEventInRun;
-	G4double fTBR;
-	G4int fSourceSelect;
-	
+
 	G4int fMotherIsotope=-10;
-	G4int fSensorChoice;
 
 	G4double fMotherEnergy=-10;
 	G4double fMotherPart=0;
 	G4float fMotherTime=0;
-	
-	//G4Accumulable <G4double> fEdepPhot;
-	//G4Accumulable<G4double> fEdepEl;
 	
 	/////////////////
 	// Histogramming
@@ -154,59 +136,54 @@ private:
 	void CreateHistogram();
 	void WriteHistogram();
 	
-	std::vector<G4double> RunVectorEnCmos;
-	std::vector<G4double>	RunVectorEnCmosPrim;
-	std::vector<G4float>	RunVectorEnCmosTime;
-	std::vector<G4double> RunVectorXCmos;
-	std::vector<G4double> RunVectorYCmos;
-	std::vector<G4double> RunVectorZCmos;
-	std::vector<G4double> RunVectorPartCmos;
+	std::vector<G4double> fRunEnCmos;
+	std::vector<G4double>	fRunEnCmosPrim;
+	std::vector<G4float>	fRunEnCmosTime;
+	std::vector<G4double> fRunXCmos;
+	std::vector<G4double> fRunYCmos;
+	std::vector<G4double> fRunZCmos;
+	std::vector<G4double> fRunPartCmos;
 	
-	std::vector<G4double> RunVectorEnPre;
-	std::vector<G4double>	RunVectorEnPrePrim;
-	std::vector<G4double> RunVectorPart;
-	std::vector<G4double> RunVectorPreCmosX;
-	std::vector<G4double> RunVectorPreCmosY;
-	std::vector<G4double> RunVectorPreCmosZ;
-	std::vector<G4double> RunVectorPreCmosTrackID;
+	std::vector<G4double> fRunEnPre;
+	std::vector<G4double>	fRunEnPrePrim;
+	std::vector<G4double> fRunPart;
+	std::vector<G4double> fRunPreCmosX;
+	std::vector<G4double> fRunPreCmosY;
+	std::vector<G4double> fRunPreCmosZ;
+	std::vector<G4double> fRunPreCmosTrackID;
 
-	std::vector<G4double> RunVectorPreFilterEn;
-	std::vector<G4double> RunVectorPreFilterPart;
+	std::vector<G4double> fRunPreFilterEn;
+	std::vector<G4double> fRunPreFilterPart;
 	
-	std::vector<G4double> RunVectorPixNo;
-//	std::vector<G4double> RunVectorPixEneDep;
-	std::vector<G4double> RunVectorPixXpos;
-	std::vector<G4double> RunVectorPixYpos;
+	std::vector<G4double> fRunPixNo;
+//	std::vector<G4double> fRunPixEneDep;
+	std::vector<G4double> fRunPixXpos;
+	std::vector<G4double> fRunPixYpos;
 	
-	std::vector<G4double> RunVectorCosX;
-	std::vector<G4double> RunVectorCosY;
-	std::vector<G4double> RunVectorCosZ;
+	std::vector<G4double> fRunCosX;
+	std::vector<G4double> fRunCosY;
+	std::vector<G4double> fRunCosZ;
 	
-	std::vector<G4double> RunVectorEnGen;
-	std::vector<G4double> RunVectorPartGen;
-	std::vector<G4double> RunVectorIsotopeGen;
+	std::vector<G4double> fRunEnGen;
+	std::vector<G4double> fRunPartGen;
+	std::vector<G4double> fRunIsotopeGen;
 	
 	
-	std::vector<G4double> RunVectorEnExit;
-	std::vector<G4double> RunVectorXExit;
-	std::vector<G4double> RunVectorYExit;
-	std::vector<G4double> RunVectorZExit;
-	std::vector<G4double> RunVectorCosXExit;
-	std::vector<G4double> RunVectorCosYExit;
-	std::vector<G4double> RunVectorCosZExit;
+	std::vector<G4double> fRunEnExit;
+	std::vector<G4double> fRunXExit;
+	std::vector<G4double> fRunYExit;
+	std::vector<G4double> fRunZExit;
+	std::vector<G4double> fRunCosXExit;
+	std::vector<G4double> fRunCosYExit;
+	std::vector<G4double> fRunCosZExit;
 	
-	std::vector<G4double> RunVectorPartExit;
-	std::vector<G4double> RunVectorParentIDExit;
+	std::vector<G4double> fRunPartExit;
+	std::vector<G4double> fRunParentIDExit;
 	
-	std::vector<G4int> RunExitProcess;
+	std::vector<G4int> fRunExitProcess;
 	
-	std::vector<G4double> RunVectorEAbsComp;
-	/*
-	 std::vector<G4double> RunVectorSourceX;
-	 std::vector<G4double> RunVectorSourceY;
-	 std::vector<G4double> RunVectorSourceZ;
-	 std::vector<G4double> RunVectorSourceEne;
-	 */
+	std::vector<G4double> fRunEAbsComp;
+
 	
 	G4String fFileName;
 	

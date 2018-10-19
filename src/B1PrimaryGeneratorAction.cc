@@ -75,14 +75,14 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 
 	switch (fSourceSelect) {
 		case 1: //PSr
-		case 8: //FlatEle
-		case 9: //FlatGamma
 			fRadiusInt=0*mm;
 			fDZInt=0*mm;
 			fRadiusExt=0*mm;
 			fDZExt=0*mm;
 			break;
 			
+		case 8: //FlatEle
+		case 9: //FlatGamma
 		case 2: //ExtSr
 			fRadiusInt=8*mm;  //8 for RM, 10.5mm PG source
 			fDZInt=0*mm;

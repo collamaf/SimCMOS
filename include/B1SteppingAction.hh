@@ -45,26 +45,23 @@ class G4LogicalVolume;
 
 class B1SteppingAction : public G4UserSteppingAction
 {
-  public:
-  B1SteppingAction(B1EventAction* eventAction,B1RunAction* runAction, G4double CollHoleDiam);
-    virtual ~B1SteppingAction();
-
-    // method from the base class
-    virtual void UserSteppingAction(const G4Step*);
-
-    std::vector<G4double>& GetStepVect() {return EntEnStep; }
-
-  
-  
-
-  private:
-    B1EventAction*  fEventAction;
-    G4LogicalVolume* fScoringVolume;
-    B1RunAction* runStepAction;
+public:
+	B1SteppingAction(B1EventAction* eventAction,B1RunAction* runAction, G4double CollHoleDiam);
+	virtual ~B1SteppingAction();
+	
+	// method from the base class
+	virtual void UserSteppingAction(const G4Step*);
+	
+	std::vector<G4double>& GetStepVect() {return EntEnStep; }
+	
+private:
+	B1EventAction*  fEventAction;
+	G4LogicalVolume* fScoringVolume;
+	B1RunAction* runStepAction;
 	G4double fCollHoleDiam;
 	
-    std::vector<double> EntEnStep;
-
+	std::vector<double> EntEnStep;
+	
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

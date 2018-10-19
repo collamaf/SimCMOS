@@ -51,7 +51,7 @@ B1ActionInitialization::~B1ActionInitialization()
 
 void B1ActionInitialization::BuildForMaster() const
 {
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCollHoleDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
+  B1RunAction* runAction = new B1RunAction(fFileName);
   SetUserAction(runAction);
 }
 
@@ -62,7 +62,7 @@ void B1ActionInitialization::Build() const
 //  SetUserAction(new B1PrimaryGeneratorAction(runAction));
 	G4cout<<"PROVA Action Init "<<fX0Scan<<G4endl;
 
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCollHoleDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
+  B1RunAction* runAction = new B1RunAction(fFileName);
   SetUserAction(runAction);
   
   B1EventAction* eventAction = new B1EventAction(runAction);
