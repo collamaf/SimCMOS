@@ -198,7 +198,7 @@ int main(int argc,char** argv)
 	
 	G4String MaterialiAssorbitore[3]= {"Cu","Al","ABS"};
 	
-	G4String FileNamePrim="Primaries";
+//	G4String FileNamePrim="Primaries";
 	G4String OutFileName="CMOSmc";
 	G4String FileNameCommonPart;
 	
@@ -233,10 +233,10 @@ int main(int argc,char** argv)
 	
 	if (NoOfPrimToGenChangeFlag) FileNameCommonPart.append("_N"+std::to_string((G4int)NoOfPrimToGen)); //if it was a TEST run under vis
 	
-	FileNamePrim.append(FileNameCommonPart+".dat");
+//	FileNamePrim.append(FileNameCommonPart+".dat");
 	OutFileName.append(FileNameCommonPart);
 	
-	std::ofstream primFile(FileNamePrim, std::ios::out);
+//	std::ofstream primFile(FileNamePrim, std::ios::out);
 	
 	// Choose the Random engine
 	G4Random::setTheEngine(new CLHEP::RanecuEngine);
