@@ -78,7 +78,7 @@ int main(int argc,char** argv)
 	G4double AttSorg[7]={
 		350, //PSr
 		2.53e3, //ExtSr Rm
-		999, //Y - not defined
+		26.5e3, //Y - according to rosa's data for Z scan (9/1/18)
 		23.24e3, //Co60
 		16.04e3, //Na22
 		33.89e3, //Ba133

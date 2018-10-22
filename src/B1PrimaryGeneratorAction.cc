@@ -94,17 +94,17 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 			fRadiusInt=3*mm;
 			fDZInt=1*mm;
 			fRadiusExt=10.48*mm; //10.48 per Rosa, 6.65 per PG
-			fDZExt=4.4*mm;   //4.4 per Rosa, 5.5 per PG
+			fDZExt=4.57*mm;   //4.4 per Rosa, 5.5 per PG, metto 4.57 per rosa dato V = 1.58
 			break;
 			
 		case 4: //Co60
 		case 5: //Na22
 		case 6: //Ba133
 		case 7: //Cs137
-			fRadiusInt=3*mm;
-			fDZInt=1*mm;
-			fRadiusExt=10.48*mm; //10.48 per Rosa, 6.65 per PG
-			fDZExt=4.4*mm;   //4.4 per Rosa, 5.5 per PG
+			fRadiusInt=0.5*mm;
+			fDZInt=0*mm;
+			fRadiusExt=0.5*mm; 
+			fDZExt=0*mm;
 			break;
 			
 		default:

@@ -323,6 +323,9 @@ Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fi
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root
 
+#### To send the sim to FARM:
+(from build)
+rsync -avzh --exclude '*.root' --exclude '*.dat' ../* collamaf@farm-login.roma1.infn.it:NewLife/CMOS/
 
 ```
 
