@@ -69,7 +69,7 @@ int main(int argc,char** argv)
 	G4UIExecutive* ui = 0;
 	
 	G4double x0Scan=0, ZValue=1.73*mm, AbsorberDiam=0*mm,AbsorberThickness=1*mm, TBRvalue=1;
-	G4int FilterFlag=1, SourceChoice=1, SrSourceFlag=0, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine=0;
+	G4int FilterFlag=1, SourceChoice=1, SensorChoice=1, AbsorberMaterial=1, QuickFlagCommandLine=0;
 	
 	G4String MacroName ="";
 	G4String FileNameLabel="";
@@ -183,7 +183,7 @@ int main(int argc,char** argv)
 	
 	if (NoOfPrimToGen!=99) NoOfPrimToGenChangeFlag=true;
 	
-	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
+	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || SourceChoice==3 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
 		NoOfPrimToGen=DTmis*AttSorg[(int)SourceChoice-1];
 	}
 	G4cout<<"\n############## \nI WILL GENERATE n= "<<NoOfPrimToGen<<" primaries \n##############"<<G4endl;
@@ -194,7 +194,6 @@ int main(int argc,char** argv)
 	G4Random::setTheSeed(seed);
 
 	G4int SourceSelect=SourceChoice;
-	if (SourceSelect==1|| SourceSelect==2) SrSourceFlag=1; //if it is a Sr source... tell to DetCons
 	
 	G4String MaterialiAssorbitore[3]= {"Cu","Al","ABS"};
 	
