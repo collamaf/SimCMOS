@@ -183,14 +183,18 @@ int main(int argc,char** argv)
 	
 	if (NoOfPrimToGen!=99) NoOfPrimToGenChangeFlag=true;
 	
+	if (SourceChoice==3) DTmis=400;
+	
 	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || SourceChoice==3 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
 		NoOfPrimToGen=DTmis*AttSorg[(int)SourceChoice-1];
 	}
 	G4cout<<"\n############## \nI WILL GENERATE n= "<<NoOfPrimToGen<<" primaries \n##############"<<G4endl;
 	if (QuickFlagCommandLine) QuickFlag=true;
 
+	// Choose the Random engine
+	G4Random::setTheEngine(new CLHEP::RanecuEngine);
 	G4long seed = time(NULL);
-	if (1||VisFlag) seed=12345; //If vis was requested same always the same seed to have reproducibility
+	if (VisFlag) seed=12345; //If vis was requested same always the same seed to have reproducibility
 	G4Random::setTheSeed(seed);
 
 	G4int SourceSelect=SourceChoice;
@@ -237,9 +241,7 @@ int main(int argc,char** argv)
 	
 //	std::ofstream primFile(FileNamePrim, std::ios::out);
 	
-	// Choose the Random engine
-	G4Random::setTheEngine(new CLHEP::RanecuEngine);
-	
+
 	// Construct the default run manager
 	//
 	//#ifdef G4MULTITHREAD

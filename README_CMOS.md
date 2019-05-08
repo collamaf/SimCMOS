@@ -316,7 +316,7 @@ FARM WITH CREAEFF.C
 ## EleFilter
 .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
 
-## EleFilter
+## EleNoFilter
 .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -seedSize 9 -edge 4 -checkLocalMaximumSide 9

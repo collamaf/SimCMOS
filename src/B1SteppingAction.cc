@@ -193,7 +193,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	// ###################### If I want to keep some kind of event for visualization
 	
 	G4Event* evt = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
-	if (ThisVol->GetName()=="DummyCMOS" && step->GetTrack()->GetDynamicParticle() ->GetPDGcode()==22 && (NextVol && NextVol->GetName()=="CMOS")) {
+	if (ThisVol->GetName()=="DummyCMOS" /*&& step->GetTrack()->GetDynamicParticle() ->GetPDGcode()==22*/ && (NextVol && NextVol->GetName()=="CMOS")) {
 		evt->KeepTheEvent();
 	}
 	// ###########################################################################
