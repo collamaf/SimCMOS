@@ -72,52 +72,55 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 {
 	G4int n_particle = 1;
 	fParticleGun  = new G4ParticleGun(n_particle);
-	G4bool fPointLike=true;
-	G4bool fExtended=false;
-	G4bool fSTB=false; 
-	
-	if (fSourceSelect==1) {  //pointlike (Sr or Co)
-		fPointLike=true;
-		fExtended=false;
-		fSTB=false;
-	} else if (fSourceSelect==2 || fSourceSelect==8 || fSourceSelect==9) { //extended Sr
-		fPointLike=false;
-		fExtended=true;
-		fSTB=false;
-	} else if (fSourceSelect==3) { //ExtY Sr
-		fPointLike=false;
-		fExtended=false;
-		fSTB=true;
-	} else if (fSourceSelect>=4 && fSourceSelect<=7) { //Gamma sources
-		fPointLike=false;
-		fExtended=true;
-		fSTB=false;
+
+	switch (fSourceSelect) {
+		case 1: //PSr
+			fRadiusInt=0*mm;
+			fDZInt=0*mm;
+			fRadiusExt=0*mm;
+			fDZExt=0*mm;
+			break;
+			
+		case 8: //FlatEle
+		case 9: //FlatGamma
+		case 2: //ExtSr
+			fRadiusInt=8*mm;  //8 for RM, 10.5mm PG source
+			fDZInt=0*mm;
+			fRadiusExt=8*mm;
+			fDZExt=0*mm;
+			break;
+			
+		case 3: //ExtY
+			fRadiusInt=3*mm;
+			fDZInt=1*mm;
+			fRadiusExt=10.48*mm; //10.48 per Rosa, 6.65 per PG
+			fDZExt=4.57*mm;   //4.4 per Rosa, 5.5 per PG, metto 4.57 per rosa dato V = 1.58
+			break;
+			
+		case 4: //Co60
+		case 5: //Na22
+		case 6: //Ba133
+		case 7: //Cs137
+			fRadiusInt=0.5*mm;
+			fDZInt=0*mm;
+			fRadiusExt=0.5*mm; 
+			fDZExt=0*mm;
+			break;
+			
+		case 10: //Na22 nuda
+			fRadiusInt=1.5*mm;
+			fDZInt=0*mm;
+			fRadiusExt=1.5*mm;
+			fDZExt=0*mm;
+			break;
+			
+		default:
+			break;
 	}
 	
-	if (fSTB) {
-	fRadiusInt=3*mm;
-	fDZInt=1*mm;
-	fRadiusExt=10.48*mm; //10.48 per Rosa, 6.65 per PG
-	fDZExt=4.4*mm;   //4.4 per Rosa, 5.5 per PG
-	} else if (fPointLike) {
-		fRadiusInt=0*mm;
-		fDZInt=0*mm;
-		fRadiusExt=0*mm;
-		fDZExt=0*mm;
-	} else if (fExtended) {
-		fRadiusInt=8*mm;  //8 for RM, 10.5mm PG source
-		fDZInt=0*mm;
-		fRadiusExt=8*mm;
-		fDZExt=0*mm;
-	}
+	if (fSourceSelect==8) FlatEle = true;
+	if (fSourceSelect==9) FlatGamma=true;
 	
-	if (fSourceSelect>=4 && fSourceSelect<=7) {
-		fRadiusInt=0.5*mm;
-		fRadiusExt=0.5*mm;
-	}
-	
-	
-	ofstream SourceFile;
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 	G4ParticleDefinition* particle = particleTable->FindParticle("geantino");
 	
@@ -137,49 +140,60 @@ B1PrimaryGeneratorAction::~B1PrimaryGeneratorAction()
 
 void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 {
-	G4bool FlatEle=false;
-	G4bool FlatGamma=false;
-	//Stronzium
-	G4int Z = 38, A = 90;
-	if (fSourceSelect==3) Z=39; //If I need Y instead of Sr
-	if (fSourceSelect==4) { // Co60
-		Z=27;
-		A=60;
-	}
-	if (fSourceSelect==5) { //Na
-		Z=11;
-		A=22;
-	}
-	if (fSourceSelect==6) { //Ba
-		Z=56;
-		A=133;
-	}
-	if (fSourceSelect==7) { //Cs
-		Z=55;
-		A=137;
-	}
-	if (fSourceSelect==8) { //flat e- distribution: 0-3 MeV
-		FlatEle=true;
-	}
-	if (fSourceSelect==9) { //flat gamma distribution: 0-1 MeV
-		FlatGamma=true;
+
+	
+	switch (fSourceSelect) {
+		case 3:
+			fSourceZ=39;
+			fSourceA=90;
+			break;
+
+		case 4:
+			fSourceZ=27;
+			fSourceA=60;
+			break;
+
+		case 5:
+		case 10:
+			fSourceZ=11;
+			fSourceA=22;
+			break;
+			
+		case 6:
+			fSourceZ=56;
+			fSourceA=133;
+			break;
+
+		case 7:
+			fSourceZ=55;
+			fSourceA=137;
+			break;
+			
+		default: //Sr
+			fSourceZ=38;
+			fSourceA=90;
+			break;
 	}
 	
 	G4double ionCharge   = 0.*eplus;
 	G4double excitEnergy = 0.*keV;
 	
-	G4ParticleDefinition* sourceParticle
-	= G4IonTable::GetIonTable()->GetIon(Z,A,excitEnergy);
+	G4ParticleDefinition* sourceION
+	= G4IonTable::GetIonTable()->GetIon(fSourceZ,fSourceA,excitEnergy);
 	if (FlatEle) {
-	fParticleGun->SetParticleDefinition(	G4ParticleTable::GetParticleTable()->FindParticle("e-"));
-//	fParticleGun->SetParticleCharge(ionCharge);
+		fParticleGun->SetParticleDefinition(	G4ParticleTable::GetParticleTable()->FindParticle("e-"));
 	} else if (FlatGamma) {
 		fParticleGun->SetParticleDefinition(	G4ParticleTable::GetParticleTable()->FindParticle("gamma"));
 		fParticleGun->SetParticleCharge(0);
 	} else  {
-		fParticleGun->SetParticleDefinition(sourceParticle);
+		fParticleGun->SetParticleDefinition(sourceION);
 		fParticleGun->SetParticleCharge(ionCharge);
 	}
+	
+	
+	//###################################################
+	// Compute volumes for TBR source
+	//##########################
 	G4double VolA=CLHEP::pi*fDZExt*(fRadiusExt*fRadiusExt-fRadiusInt*fRadiusInt);
 	G4double VolB=CLHEP::pi*fRadiusInt*fRadiusInt*fDZInt;
 	G4double VolC=CLHEP::pi*fRadiusInt*fRadiusInt*(fDZExt-fDZInt);
@@ -187,15 +201,16 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 	G4double ProbA=VolA/denominatore;
 	G4double ProbB=VolB*fTBR/denominatore;
 	G4double ProbC=VolC/denominatore;
+	//###################################################
 	
 	G4double zSource=0;
 	G4double zSourceOffset=1e-6*mm; //to avoid generating particles at the very boundary of source!
-
+	
 	if (fRadiusExt==fRadiusInt) { //se ho un solo raggio ignoro il TBR e faccio la pasticca di sorgente
 		fRadiusMax=fRadiusInt;
 		fRadiusMin=0*mm;
 		zSource = -zSourceOffset;
-	} else {
+	} else { //se ho una sorgente con TBR (lo capisco dal fatto che ho due raggi diversi per Int e Ext)
 		G4double random=G4UniformRand();
 		if (random<=ProbA) {  //faccio il cilindretto cavo esterno al centro (VolA)
 			fRadiusMax=fRadiusExt;
@@ -217,52 +232,60 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 	
 	if (fSourceSelect>=4 && fSourceSelect<=7 ) zSource=-1.5*mm; //Co60 Na Ba Cs sources are in the middle of the plastic thickness
 	
+	//###################################################
+	// Sampling particle energy
+	//##########################
 	if (FlatEle) {
 		G4double randomEne=G4UniformRand()*3;
-//		randomEne=1;
 		fParticleGun->SetParticleEnergy(randomEne*MeV); //SetParticleEnergy uses kinetic energy
 		evtPrimAction->SetSourceEne(randomEne);
 	} else if (FlatGamma) {
 		G4double randomEne=G4UniformRand()*1;
-		fParticleGun->SetParticleEnergy(randomEne*MeV); //SetParticleEnergy uses kinetic energy
+		fParticleGun->SetParticleEnergy(randomEne*MeV);
+		evtPrimAction->SetSourceEne(randomEne);
 	} else {
-		fParticleGun->SetParticleEnergy(0*MeV); //SetParticleEnergy uses kinetic energy
+		fParticleGun->SetParticleEnergy(0*MeV);
 	}
-		
+	//###################################################
+
+	//###################################################
+	// Sampling particle initial position
+	//##########################
 	G4double rho = sqrt(fRadiusMin*fRadiusMin + G4UniformRand()*(fRadiusMax*fRadiusMax-fRadiusMin*fRadiusMin));   //fixed square problem by collamaf with internal radius!
 	G4double alpha = G4UniformRand()*CLHEP::pi*2.;
-
 	const G4ThreeVector position = G4ThreeVector(rho*cos(alpha), rho*sin(alpha), zSource);
-/*
-	evtPrimAction->SetSourceCosX(0);
-	evtPrimAction->SetSourceCosY(0);
-	evtPrimAction->SetSourceCosZ(0);
-*/
-		if (FlatEle || FlatGamma) {
-			G4double phi = G4UniformRand()*CLHEP::pi*2.;
-//			G4double costheta = G4UniformRand()*2.-1.;
-			G4double costheta = G4UniformRand();
-			G4double theta = acos(costheta);
-			G4double xDirection = sin(theta)*cos(phi);
-			G4double yDirection = sin(theta)*sin(phi);
-			G4double zDirection = costheta;
-			const G4ThreeVector momentumDirection = G4ThreeVector(xDirection,yDirection,zDirection);
-			fParticleGun->SetParticleMomentumDirection(momentumDirection);
-		} else {
-			G4ThreeVector momentumDirection = G4ThreeVector(0,0,0);
-			fParticleGun->SetParticleMomentumDirection(momentumDirection);
-		}
-	fParticleGun->SetParticlePosition(position);
+	//###################################################
 
-//	evtPrimAction->SetSourceEne(fParticleGun->GetParticleEnergy());
+	//###################################################
+	// Sampling particle initial direction
+	//##########################
+	if (FlatEle || FlatGamma) { //If FlatSource (for Eff) was requested, generate only towards up
+		G4double phi = G4UniformRand()*CLHEP::pi*2.;
+		G4double costheta = G4UniformRand();
+		G4double theta = acos(costheta);
+		G4double xDirection = sin(theta)*cos(phi);
+		G4double yDirection = sin(theta)*sin(phi);
+		G4double zDirection = costheta;
+		const G4ThreeVector momentumDirection = G4ThreeVector(xDirection,yDirection,zDirection);
+		fParticleGun->SetParticleMomentumDirection(momentumDirection);
+	} else {
+		G4ThreeVector momentumDirection = G4ThreeVector(0,0,0);
+		fParticleGun->SetParticleMomentumDirection(momentumDirection);
+	}
+	fParticleGun->SetParticlePosition(position);
+	//###################################################
+
 	evtPrimAction->SetSourceX((position.x())/mm);
 	evtPrimAction->SetSourceY((position.y())/mm);
 	evtPrimAction->SetSourceZ((position.z())/mm);
 	
-	
+	//###################################################
+	// GENERATE PRIMARY VERTEX
+	//##########################
 	fParticleGun->GeneratePrimaryVertex(anEvent);
-	
-	if(anEvent->GetEventID()==1) {  //stampo informazioni sorgente
+	//###################################################
+
+	if(anEvent->GetEventID()==1) {  //stampo informazioni sorgente solo per il primo evento
 		G4cout<<"Dimensioni sorgente: Raggio interno = "<<fRadiusInt<<", Raggio esterno = "<<fRadiusExt<<", H = "<<fZ<<G4endl;
 		if (fSourceSelect==3) { //solo se è la sorgente ExtY..
 			G4cout<<"TBR richiesto= "<<fTBR<<G4endl;
@@ -272,23 +295,6 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 			G4cout<<"Volume sorgente tot= "<<VolA+VolB+VolC<<G4endl;
 		}
 	}
-}
-
-
-
-G4double  B1PrimaryGeneratorAction::BetaDecaySpectrum(G4double Ek, G4double EndPoint)
-{
-	G4double ElMassMev = 0.510998928*MeV;
-	
-	G4double res=0.;
-	
-	G4double omega= Ek /ElMassMev  +1.;
-	G4double omegamax= EndPoint /ElMassMev +1.;
-	if(omega>1 && omega<omegamax)
-	{
-		res=(omegamax-omega)*(omegamax-omega) *Ek*sqrt(omega*omega-1.);
-	}
-	return res;
 }
 
 

@@ -49,29 +49,25 @@ class G4Tubs;
 
 class B1PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
-  public:
-//    B1PrimaryGeneratorAction(B1EventAction* eventAction);
+public:
+	//    B1PrimaryGeneratorAction(B1EventAction* eventAction);
 	B1PrimaryGeneratorAction(B1EventAction* eventAction, G4double TBR=1, G4int SourceSelect=1);
-    virtual ~B1PrimaryGeneratorAction();
-
-    // method from the base class
-    virtual void GeneratePrimaries(G4Event*);         
-  
-    // method to access particle gun
-    const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
+	virtual ~B1PrimaryGeneratorAction();
 	
-	G4double BetaDecaySpectrum(G4double Ek, G4double EndPoint);
+	// method from the base class
+	virtual void GeneratePrimaries(G4Event*);
+	
+	// method to access particle gun
+	const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
 	
 	inline void SetRadius(const double Radius){fRadiusMax=Radius;};
 	inline void SetZ(const double Z){fZ=Z;};
 	
-  private:
-    G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
+private:
+	G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
 	B1EventAction* evtPrimAction;
-//	G4Tubs * fSourceVol;
 	
 	G4double fZ;
-
 	G4double fRadiusExt;
 	G4double fRadiusInt;
 	G4double fDZExt;
@@ -80,12 +76,12 @@ class B1PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	G4double fRadiusMax;
 	G4double fRadiusMin;
 	G4double fTBR;
-//	G4double fRatio;
 	G4int fSourceSelect;
-
-	//	G4LogicalVolume* sourceLV;
-//	G4VPhysicalVolume* sourcePV;
 	
+	G4int fSourceZ, fSourceA;
+	
+	G4bool FlatEle=false;
+	G4bool FlatGamma=false;
 	
 };
 
