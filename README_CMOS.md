@@ -25,6 +25,7 @@ Source Choice:
 7 - Cs137
 8 - Flat Ele 0-3MeV
 9 - Flat Gamma 0-1MeV
+10 - Na22 "nude"
 
 Sensor Choice:
 1 - MT9V011
@@ -468,6 +469,9 @@ B1->Draw("PreCmosEn","PreCmosPart==11","sames");
 
 2018.09.17 by collamaf
 - Finally working for efficiency!!!!
+
+2019.05.08 by collamaf
+- Addedd Source 10, Na22 "nude", so that the beta+ exits
 
 
 

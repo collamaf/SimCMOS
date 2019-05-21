@@ -184,6 +184,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4Material* SourcePSR_mat=nist->FindOrBuildMaterial("MyPlastic");
 	if (fSourceSelect==8 || fSourceSelect==9) SourceExtSR_mat=world_mat;
 
+	G4Material* Na22nudeSource_mat = nist->FindOrBuildMaterial("MyAlu");
+
 	//###################################################################
 	//###################################################
 	// DEFINITIONS OF DIMENSIONS AND SIZES 
@@ -223,6 +225,12 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 	G4double RminSourceGamma = 0.*mm;
 	G4double RmaxSourceGamma = 12.5*mm;
 	G4double DzSourceGamma= 3*mm;
+	//###
+	
+	//### Extended Na22 "nude" Source
+	G4double RminSourceNa22nude = 25.4*mm/2.-3.18*mm;
+	G4double RmaxSourceNa22nude = 25.4*mm/2.;
+	G4double DzSourceNa22nude= 3.18*mm;
 	//###
 	
 	//### Filter
@@ -592,8 +600,47 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 		logicSourceGamma->SetRegion(sorgente);
 		sorgente->AddRootLogicalVolume(logicSourceGamma);
 	}
-	//################################################### END POINTLIKE SR SOURCE
+	//################################################### END POINTLIKE GAMMA SOURCE
 	
+	
+	
+	//###################################################
+	// Extended Na22 "nude" source
+	//##########################
+	G4ThreeVector posSourceNa22nude = G4ThreeVector(0, 0, -DzSourceNa22nude*0.5);
+	
+	G4cout<<"GEOMETRY DEBUG - Z thickness of solidSource= "<<DzSourceNa22nude/mm<<", Z pos= "<<-DzSourceNa22nude*0.5<<G4endl;
+	
+	G4Tubs* solidSourceNa22nude =
+	new G4Tubs("Source",                       //its name
+						 RminSourceNa22nude,
+						 RmaxSourceNa22nude,
+						 0.5*DzSourceNa22nude,
+						 Ang0,
+						 AngTwoPi);     //its size
+	
+	G4LogicalVolume* logicSourceNa22nude =
+	new G4LogicalVolume(solidSourceNa22nude,          //its solid
+											Na22nudeSource_mat,           //its material
+											"Source");            //its name
+	
+	if (fSourceSelect==10 ) {
+		G4cout<<"GEOMETRY DEBUG - Extended Na22 nude source has been placed!!"<<G4endl;
+		
+		new G4PVPlacement(0,                     //no rotation
+											posSourceNa22nude,       //at (0,0,0)
+											logicSourceNa22nude,            //its logical volume
+											"Source",               //its name
+											logicWorld,            //its mother  volume
+											false,                 //no boolean operation
+											0,                     //copy number
+											checkOverlaps);        //overlaps checking
+		
+		logicSourceNa22nude->SetRegion(sorgente);
+		sorgente->AddRootLogicalVolume(logicSourceNa22nude);
+	}
+	//################################################### END EXTENDED Na22 NUDE SOURCE
+
 	
 	//###################################################
 	// Possible Collimator/Absorber

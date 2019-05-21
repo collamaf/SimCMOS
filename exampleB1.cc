@@ -75,7 +75,7 @@ int main(int argc,char** argv)
 	G4String FileNameLabel="";
 
 	G4double DTmis=600; //in s
-	G4double AttSorg[7]={
+	G4double AttSorg[10]={ //in Bq
 		350, //PSr
 		2.53e3, //ExtSr Rm
 		26.5e3, //Y - according to rosa's data for Z scan (9/1/18)
@@ -83,6 +83,9 @@ int main(int argc,char** argv)
 		16.04e3, //Na22
 		33.89e3, //Ba133
 		37.84e3, //Cs137
+		99,
+		99,
+		27.110e3, //Na22 nuda PG
 	};
 	
 	G4bool NoOfPrimToGenChangeFlag=false;
@@ -101,6 +104,7 @@ int main(int argc,char** argv)
 	 7 - Cs137
 	 8 - FlatEle 0-3MeV
 	 9 - FlatGamma 0-1 MeV
+	 10 - Na22 nuda
 	 */
 	
 	G4double PixelThickness=2.5; //um
@@ -184,8 +188,9 @@ int main(int argc,char** argv)
 	if (NoOfPrimToGen!=99) NoOfPrimToGenChangeFlag=true;
 	
 	if (SourceChoice==3) DTmis=400;
-	
-	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || SourceChoice==3 || (SourceChoice>=4 && SourceChoice<=7))) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
+	if (SourceChoice==10) DTmis=1000;
+
+	if (!NoOfPrimToGenChangeFlag && (SourceChoice==2 || SourceChoice==3 || (SourceChoice>=4 && SourceChoice<=7) || SourceChoice==10)) { // If still 99 it means I did not choose a precise value via command line, so let's compute it! -   To be fixed: what to do in case of PSr/Y
 		NoOfPrimToGen=DTmis*AttSorg[(int)SourceChoice-1];
 	}
 	G4cout<<"\n############## \nI WILL GENERATE n= "<<NoOfPrimToGen<<" primaries \n##############"<<G4endl;
@@ -222,7 +227,8 @@ int main(int argc,char** argv)
 	if (SourceSelect==7) FileNameCommonPart.append("_PCs137");
 	if (SourceSelect==8) FileNameCommonPart.append("_FlatEle");
 	if (SourceSelect==9) FileNameCommonPart.append("_FlatGamma");
-	
+	if (SourceSelect==10) FileNameCommonPart.append("_PNa22nude");
+
 	if (SensorChoice==1) FileNameCommonPart.append("_011");
 	if (SensorChoice==2) FileNameCommonPart.append("_115");
 	if (SensorChoice==3) FileNameCommonPart.append("_60035");

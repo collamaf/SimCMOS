@@ -107,60 +107,19 @@ evtPrimAction(eventAction), fTBR(TBR), fSourceSelect(SourceSelect)
 			fDZExt=0*mm;
 			break;
 			
+		case 10: //Na22 nuda
+			fRadiusInt=1.5*mm;
+			fDZInt=0*mm;
+			fRadiusExt=1.5*mm;
+			fDZExt=0*mm;
+			break;
+			
 		default:
 			break;
 	}
 	
 	if (fSourceSelect==8) FlatEle = true;
 	if (fSourceSelect==9) FlatGamma=true;
-	
-#if 0
-	G4bool fPointLike=true;
-	G4bool fExtended=false;
-	G4bool fSTB=false;
-	
-	
-	if (fSourceSelect==1) {  //pointlike (Sr)
-		fPointLike=true;
-		fExtended=false;
-		fSTB=false;
-	} else if (fSourceSelect==2 || fSourceSelect==8 || fSourceSelect==9) { //extended Sr or Flat
-		fPointLike=false;
-		fExtended=true;
-		fSTB=false;
-	} else if (fSourceSelect==3) { //ExtY Sr
-		fPointLike=false;
-		fExtended=false;
-		fSTB=true;
-	} else if (fSourceSelect>=4 && fSourceSelect<=7) { //Gamma sources
-		fPointLike=false;
-		fExtended=true;
-		fSTB=false;
-	}
-	
-	if (fSTB) {
-		fRadiusInt=3*mm;
-		fDZInt=1*mm;
-		fRadiusExt=10.48*mm; //10.48 per Rosa, 6.65 per PG
-		fDZExt=4.4*mm;   //4.4 per Rosa, 5.5 per PG
-	} else if (fPointLike) {
-		fRadiusInt=0*mm;
-		fDZInt=0*mm;
-		fRadiusExt=0*mm;
-		fDZExt=0*mm;
-	} else if (fExtended) {
-		fRadiusInt=8*mm;  //8 for RM, 10.5mm PG source
-		fDZInt=0*mm;
-		fRadiusExt=8*mm;
-		fDZExt=0*mm;
-	}
-	
-	if (fSourceSelect>=4 && fSourceSelect<=7) {
-		fRadiusInt=0.5*mm;
-		fRadiusExt=0.5*mm;
-	}
-#endif
-	
 	
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 	G4ParticleDefinition* particle = particleTable->FindParticle("geantino");
@@ -182,33 +141,6 @@ B1PrimaryGeneratorAction::~B1PrimaryGeneratorAction()
 void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 {
 
-	//Strontium
-#if 0
-	G4int Z = 38, A = 90;
-	if (fSourceSelect==3) Z=39; //If I need Y instead of Sr
-	if (fSourceSelect==4) { // Co60
-		Z=27;
-		A=60;
-	}
-	if (fSourceSelect==5) { //Na
-		Z=11;
-		A=22;
-	}
-	if (fSourceSelect==6) { //Ba
-		Z=56;
-		A=133;
-	}
-	if (fSourceSelect==7) { //Cs
-		Z=55;
-		A=137;
-	}
-	if (fSourceSelect==8) { //flat e- distribution: 0-3 MeV
-		FlatEle=true;
-	}
-	if (fSourceSelect==9) { //flat gamma distribution: 0-1 MeV
-		FlatGamma=true;
-	}
-#endif
 	
 	switch (fSourceSelect) {
 		case 3:
@@ -222,6 +154,7 @@ void B1PrimaryGeneratorAction::GeneratePrimaries (G4Event* anEvent)
 			break;
 
 		case 5:
+		case 10:
 			fSourceZ=11;
 			fSourceA=22;
 			break;
