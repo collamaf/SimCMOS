@@ -38,8 +38,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1ActionInitialization::B1ActionInitialization(G4double x0, G4double ZValue, G4double CuDiam, G4int FilterFlag, std::ofstream& file, G4double TBR/*, G4bool SrSourceFlag*/, G4int SourceSelect, G4int SensorChoice, G4String FileName)
-  : G4VUserActionInitialization(), fX0Scan(x0), fZValue(ZValue), fCuDiam(CuDiam), fFilterFlag(FilterFlag), FilePrimaries(file), fTBR(TBR), /*fSrSourceFlag(SrSourceFlag),*/ 	fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fFileName(FileName)
+B1ActionInitialization::B1ActionInitialization(G4double x0, G4double ZValue, G4double CollHoleDiam, G4int FilterFlag, G4double TBR/*, G4bool SrSourceFlag*/, G4int SourceSelect, G4int SensorChoice, G4String FileName)
+  : G4VUserActionInitialization(), fX0Scan(x0), fZValue(ZValue), fCollHoleDiam(CollHoleDiam), fFilterFlag(FilterFlag), fTBR(TBR), /*fSrSourceFlag(SrSourceFlag),*/ 	fSourceSelect(SourceSelect), fSensorChoice(SensorChoice), fFileName(FileName)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -51,7 +51,7 @@ B1ActionInitialization::~B1ActionInitialization()
 
 void B1ActionInitialization::BuildForMaster() const
 {
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
+  B1RunAction* runAction = new B1RunAction(fFileName);
   SetUserAction(runAction);
 }
 
@@ -62,13 +62,13 @@ void B1ActionInitialization::Build() const
 //  SetUserAction(new B1PrimaryGeneratorAction(runAction));
 	G4cout<<"PROVA Action Init "<<fX0Scan<<G4endl;
 
-  B1RunAction* runAction = new B1RunAction(fX0Scan, fZValue, fCuDiam, fFilterFlag, fTBR, fSourceSelect, fSensorChoice, fFileName);
+  B1RunAction* runAction = new B1RunAction(fFileName);
   SetUserAction(runAction);
   
-  B1EventAction* eventAction = new B1EventAction(runAction, FilePrimaries);
+  B1EventAction* eventAction = new B1EventAction(runAction);
   SetUserAction(eventAction);
 	
-  SetUserAction(new B1SteppingAction(eventAction, runAction, fCuDiam));
+  SetUserAction(new B1SteppingAction(eventAction, runAction, fCollHoleDiam));
 	
 //	B1PrimaryGeneratorAction* primAction= new B1PrimaryGeneratorAction(eventAction, TRUE, fSrSourceFlag, TRUE, fTBR, fSrSourceFlag); // Y, Sr, PrintDist, TBR sorge
 	B1PrimaryGeneratorAction* primAction= new B1PrimaryGeneratorAction(eventAction,  fTBR, fSourceSelect);

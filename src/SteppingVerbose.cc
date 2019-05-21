@@ -56,7 +56,6 @@ void SteppingVerbose::TrackingStarted()
 {
 	G4Event* evt = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
 	
-//	if(evt->GetEventID()==454741 || evt->GetEventID()==476533 || evt->GetEventID()==547138){
 		if(1||evt->ToBeKept()){
 		G4cout<<"CAPISCO! Sono in TrackingStarted! Evento: "<<evt->GetEventID()<<G4endl;
 		CopyState();

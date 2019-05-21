@@ -40,7 +40,7 @@ class G4VSteppingVerbose;
 class B1ActionInitialization : public G4VUserActionInitialization
 {
 public:
-	B1ActionInitialization(G4double, G4double, G4double, G4int, std::ofstream &, G4double/*, G4bool*/, G4int, G4int, G4String);
+	B1ActionInitialization(G4double, G4double, G4double, G4int,  G4double/*, G4bool*/, G4int, G4int, G4String);
 	virtual ~B1ActionInitialization();
 	
 	virtual void BuildForMaster() const;
@@ -52,9 +52,8 @@ public:
 protected:
 	G4double fX0Scan;
 	G4double fZValue;
-	G4double fCuDiam;
+	G4double fCollHoleDiam;
 	G4int fFilterFlag;
-	std::ofstream &FilePrimaries;
 	G4double fTBR;
 //	G4bool fSrSourceFlag;
 	G4int fSourceSelect;

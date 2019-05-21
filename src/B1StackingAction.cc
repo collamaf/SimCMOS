@@ -65,17 +65,12 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 	
 	if (debug) G4cout<<"CMOSDEBUG PROVA STACKING creata nuova traccia tipo= "<< track->GetDynamicParticle() ->GetPDGcode()<<", MotherIsotope Val= "<< runStackAction->GetMotherIsotope()
 		<<G4endl;
-	//keep primary particle
-	//	if (track->GetParentID() == 0) return fUrgent;
-	//	if (track->GetParentID() == 1 && track->GetDynamicParticle() ->GetPDGcode()==11)		  G4cout<<"CMOSDEBUG PROVA STACKING elettrone! en= "<< track->GetKineticEnergy()/CLHEP::keV  <<G4endl;
-	//	runStackAction->SetMotherIsotope(-10); //I have a new particle, so a initialise the flag
 	
 	fEventAction->ResetPassCounterSource(); //collamaf: at each new track we reset the pass counter
 	fEventAction->ResetPassCounterCmos(); //collamaf: at each new track we reset the pass counter
 	
 	
 	if (CreatorProcname=="RadioactiveDecay" && track->GetDynamicParticle() ->GetPDGcode()<9e8) {
-//		G4cout<<"CIAONE 1"<<G4endl;
 		runStackAction->SetMotherIsotope(track->GetParentID()-1);
 		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
 		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
@@ -88,9 +83,7 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
 	}
 	
-	if (track->GetDynamicParticle() ->GetPDGcode()==11 && track->GetTrackID()==1) { //if direct electron source
-		//		G4cout<<"CMOSDEBUG daje= "<< track->GetKineticEnergy()/CLHEP::keV  <<G4endl;
-//		G4cout<<"CIAONE 2"<<G4endl;
+	if (track->GetDynamicParticle() ->GetPDGcode()==11 && track->GetTrackID()==1) { //if direct electron source store its properties
 		runStackAction->SetMotherIsotope(0);
 		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
 		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
@@ -103,8 +96,7 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
 	}
 	
-	if (track->GetDynamicParticle() ->GetPDGcode()==22 && track->GetTrackID()==1) { //if direct gamma source
-		
+	if (track->GetDynamicParticle() ->GetPDGcode()==22 && track->GetTrackID()==1) { //if direct gamma source store its properties
 		runStackAction->SetMotherIsotope(0);
 		(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
 		(runStackAction->SetMotherPart(track->GetDynamicParticle()->GetPDGcode()));
@@ -116,41 +108,9 @@ B1StackingAction::ClassifyNewTrack(const G4Track* track)
 		(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
 		(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
 	}
-	
-#if 0
-	if (track->GetDynamicParticle() ->GetPDGcode()==11) { //if I generated an electron
-		if (debug) G4cout<<"CMOSDEBUG PROVA STACKING nuovo elettrone! en= "<< track->GetKineticEnergy()/CLHEP::keV  <<G4endl;
-		if (track->GetParentID() == 1) { //figlio di Sr
-			if (debug) G4cout<<"CMOSDEBUG Sr Setto il MotherIsotope a 0"<<G4endl;
-			runStackAction->SetMotherIsotope(0);
-			(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
-			(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
-			(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
-			(runStackAction->GetRunIsotopeGen()).push_back(0);
-			(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
-			(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
-			(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
-		} else if (track->GetParentID() == 2) {  //figlio di Y
-			if (debug) G4cout<<"CMOSDEBUG Y Setto il MotherIsotope a 1"<<G4endl;
-			runStackAction->SetMotherIsotope(1);
-			(runStackAction->SetMotherEnergy(track->GetKineticEnergy()/CLHEP::keV));
-			(runStackAction->SetMotherTime(track->GetGlobalTime()/CLHEP::ns));
-			//			G4cout<<"CMOSDEBUG Tempo ns= "<< track->GetGlobalTime()/CLHEP::ns*1e-16<<G4endl;
-			(runStackAction->GetRunEnGen()).push_back(track->GetKineticEnergy()/CLHEP::keV);
-			(runStackAction->GetRunIsotopeGen()).push_back(1);
-			(runStackAction->GetRunCosX()).push_back(track->GetMomentumDirection().x());
-			(runStackAction->GetRunCosY()).push_back(track->GetMomentumDirection().y());
-			(runStackAction->GetRunCosZ()).push_back(track->GetMomentumDirection().z());
-		}
-	}
-#endif
 	
 	
 	return fUrgent;
 }
-//kill secondary neutrino
-//  if (track->GetDefinition() == G4NeutrinoE::NeutrinoE()) return fKill;
-//  else return fUrgent;
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

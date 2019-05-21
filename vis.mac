@@ -52,8 +52,9 @@
 /vis/scene/add/hits
 #
 # To draw only gammas:
-#/vis/filtering/trajectories/create/particleFilter
-#/vis/filtering/trajectories/particleFilter-0/add gamma
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add e+
+/vis/filtering/trajectories/particleFilter-0/active false
 #
 # To invert the above, drawing all particles except gammas,
 # keep the above two lines but also add:
@@ -124,6 +125,8 @@
 # To get nice view
 /vis/geometry/set/visibility World 0 false
 /vis/geometry/set/visibility Envelope 0 false
+/vis/geometry/set/visibility Dummy 0 false
+/vis/geometry/set/visibility DummyCMOS 0 false
 /vis/viewer/set/style surface
 /vis/viewer/set/hiddenMarker true
 #/vis/viewer/set/viewpointThetaPhi 120 150
@@ -136,7 +139,7 @@
 /vis/geometry/set/colour ABSaround 0 0 0 1 1
 /vis/geometry/set/colour Carrier 0 1 1 1 0.05
 /vis/geometry/set/colour CuCollimator 0 1 0.57 0.3 1
-/vis/geometry/set/colour DummyCMOS 0 0 0 1 1
+#/vis/geometry/set/colour DummyCMOS 0 0 0 1 1
 #/vis/geometry/set/colour [logic name] depth R G B opacity
 #
 # Re-establish auto refreshing and verbosity:

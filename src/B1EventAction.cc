@@ -39,7 +39,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1EventAction::B1EventAction(B1RunAction* runAction, std::ofstream & file)
+B1EventAction::B1EventAction(B1RunAction* runAction)
 : G4UserEventAction(),
 fRunAction(runAction),
 fEdep(0.),
@@ -57,7 +57,6 @@ fNSourceExit(0.),
 fStoreTrackIDSource(0),
 fStoreTrackIDCmos(0),
 fStoreEventIDCmosPrim(-10),
-FilePrimaries(file),
 fPrimDecayTime(0)
 {}
 
