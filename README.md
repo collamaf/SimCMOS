@@ -6,15 +6,11 @@ cd build
 cmake -DGeant4_DIR=$G4INSTALL ../
 make
 ./exampleB1
-./exampleB1 {CollHoleDiam (<0->no Cu)} {CollThickness} {Cu Material 1-Cu 2-Al 3-ABS} {ZOffs} {FilterFlag} {TBR} {SourceChoice} {x0Scan} {SensorChoice} ../run1.mac
-e.g.:
-./exampleB1 0 0.3 1 1.74 1 10 2 0 2 ../run1.mac 
 
 ./exampleB1 -AbsD -1 -Z 0.010 -Fil 0 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 ./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 
 ```
-{all distances/sizes in mm}
 Source Choice:
 1 - Pointlike Sr
 2 - Extended Sr
@@ -25,7 +21,7 @@ Source Choice:
 7 - Cs137
 8 - Flat Ele 0-3MeV
 9 - Flat Gamma 0-1MeV
-10 - Na22 "nude"
+10 - Na22 "nude" (PG)
 
 Sensor Choice:
 1 - MT9V011
@@ -35,7 +31,7 @@ Sensor Choice:
 
 
 ## GEOMETRY
-- Extended Sr Source ending at Z=0
+- Extended  Source ending at Z=0
 - Cu collimator on top of Sr source (toggleble)
 - CMOS Detector starting at Z offset (Z distance is from source surface to possible resin in case of sensor 1, or up to the sensor in case of sensor 2, even if with filter)
 - Sensor resin filter in contact with CMOS (towards source)
@@ -51,10 +47,16 @@ eBrem				2			3
 
 CPU TIMES NEEDED FOR 1e5 PRIMARIES:
 
+#### To send the sim to FARM:
+```
+(from build)
+rsync -avzh --exclude '*.root' --exclude '*.dat' ../* collamaf@farm-login.roma1.infn.it:NewLife/CMOS/
+
+```
+
 
 ## OUTPUT:
-The usual PrimariesX{}_Z{}_CuD{}_Fil{}_TBR{}{_Sr}.dat is created to keep track of the progress
-A root file named MCsondaGEANT_Z{XX}.root is created, reporting the Z offset value, in which on an event (i.e. a primary particle) by event basis it is stored:
+A root file named CMOSmc_{XX}.root is created, reporting the several parameters used for the run, in which on an event (i.e. a primary particle) by event basis it is stored:
 ### SOURCE vector (one entry per primary particle):
 - AllX: X coordinate of primary particle [mm];
 - AllY: Y coordinate of primary particle [mm];
@@ -109,290 +111,60 @@ Source->Draw("ExitEne","ExitPart==11&&ExitProcess==6")
 ```
 to see energy spectrum of electrons created by Sr/Y that exit the source
 
-Per disegnare contributi Sr e Y:
-```
-pezzi di codice
-file=$(ls -t Primaries_X0_Z*.dat | head -n1); tail -f $file
-
-````
+## Pass The MC output to data-analysis algorithm
 
 da CMOS/CodiceCMOS
+```
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmcX0_Z173_NOCuD_Fil1_TBR10_ExtSr_115_Frame100.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -frameSize 488x648 -t 7 -mc
 
-```
-Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800.root -noise /Users/francesco/Documents/NewLife/Sonda/Dati/CMOS/CodiceCMOS/DatiVari/DatiDaRosa29Mag18/VariazioneMateriale_Sr/2018-05-31_MT9V115_SrRM_Int200G1T22_Nothing_0000_noise_100_0.root  -frameSize 488x648 -t 7 -mc
-
-DataAnalysis /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800_Reduced.root -frameSize 488x648  -mc
-
-
-
-################
-
-###### Efficienza sensore + filtro ##########
-root -l CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_UpFront_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_UpFront_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-##### LOCAL
-
-root -l CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-###### Efficienza sensore "nudo" ########## (GAC) PreCmosEn
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-###### Efficienza sensore "nudo" ########## (GAC) PreCmosEnPrim
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","","") 
-EneIn->Sumw2()
-EneIn->Rebin(2)
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-PrimEne->Rebin(2)
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-
-
-##### LOCAL
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-##### LOCAL COMBINED - PreEnePrim
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-##### LOCAL COMBINED - PreEne
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-###################################################
-############################# GOOD
-##### FARM COMBINED - PreEnePrim - TOT
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-##### LOCAL COMBINED - PreEnePrim - TOT
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N1000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEnPrim>>EneIn","","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-##### FARM COMBINED GAMMA - PreEnePrim - TOT
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEn>>EneIn","","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-##### FARM NAKED GAMMA - PreEnePrim - TOT
-
-root -l CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000.root 
-
-TH1F* EneIn=new TH1F("EneIn","EneIn",150, 0, 3000); 
-B1->Draw("PreCmosEn>>EneIn","","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized.root") 
-PrimEne->Sumw2()
-new TCanvas
-PrimEne->Draw()
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-
-PrimEne->Fit("pol0","","",1200, 2300);
-
-FARM WITH CREAEFF.C
-
-## GammaFilter
- .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
- 
- ## GammaNoFilter
-
-.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
-
-## LowEneGammaNoFilter
-.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
-
-## LowEneGammaFilter
-.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
-
-## EleFilter
-.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
-
-## EleNoFilter
-.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root -seedSize 9 -edge 4 -checkLocalMaximumSide 9
 
 Riduzione /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N1000000_Frame1800.root -noise 2018-04-20_MT9V115_stronzioRM22gradi_0000_noise_100.root
 
-#### To send the sim to FARM:
-(from build)
-rsync -avzh --exclude '*.root' --exclude '*.dat' ../* collamaf@farm-login.roma1.infn.it:NewLife/CMOS/
+
+
+DataAnalysis /Users/francesco/MonteCarlo/Sonda/SimCMOS/build/CMOSmc_X0_Z50_NoAbs_Fil1_ExtSr_115Eff_Frame800_Reduced.root -frameSize 488x648  -mc
+
 
 ```
+## CREATE EFFICIENCY CURVES with macro CreaEff.C
 
+cd /build/
 
-TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
-PrimEne->Sumw2()
-PrimEne->Rebin(1)
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
+### GammaFilter
+```
 
+ .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
+ ```
 
+### GammaNoFilter
+ ```
 
-TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-EneIn->Sumw2()
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
-PrimEne->Sumw2()
-PrimEne->Rebin(1)
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
+```
 
+### LowEneGammaNoFilter
+```
 
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
+```
 
-TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z173_NoAbs_Fil1_ExtSr_115_Frame800_Analized.root") 
-PrimEne->Rebin(1)
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
+### LowEneGammaFilter
+```
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
+```
 
+### EleFilter
+```
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
+```
 
-
-######## RIMOZIONE A MANO DEGLI ERRORI IN PRIMENE
-
-root -l CMOSmc_X0_Z50_NoAbs_Fil0_ExtSr_115Eff.root 
-TH1F* EneIn=new TH1F("EneIn","EneIn",230,0,2300.); 
-EneIn->Sumw2()
-B1->Draw("PreCmosEn>>EneIn","PreCmosPart==11","") 
-TFile *_file1 = TFile::Open("CMOSmc_X0_Z50_NoAbs_Fil0_ExtSr_115Eff_Frame800_Analized.root")
-for (int ii=1; ii<= PrimEne->GetNbinsX(); ii++) cout<<PrimEne->GetBinError(ii)<<endl
-for (int ii=1; ii<= PrimEne->GetNbinsX(); ii++) PrimEne->SetBinError(ii,0)
-PrimEne->Divide(EneIn) 
-PrimEne->Draw("") 
-
-
-
-
-
-B1->SetLineColor(kRed);
-B1->Draw("PreFilterEn","PreFilterPart==22","");
-B1->SetLineColor(kBlue);
-B1->Draw("PreFilterEn","PreFilterPart==11","sames");
-B1->SetLineColor(kMagenta);
-B1->Draw("PreCmosEn","PreCmosPart==22","sames");
-B1->SetLineColor(kCyan);
-B1->Draw("PreCmosEn","PreCmosPart==11","sames");
-
-
-
-
-
-
-
-
+### EleNoFilter
+```
+.X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
+```
 
 
 
@@ -472,6 +244,9 @@ B1->Draw("PreCmosEn","PreCmosPart==11","sames");
 
 2019.05.08 by collamaf
 - Addedd Source 10, Na22 "nude", so that the beta+ exits
+
+2019.05.21 by collamaf
+- README cleaning
 
 
 
