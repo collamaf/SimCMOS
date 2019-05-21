@@ -30,7 +30,7 @@ Sensor Choice:
 
 
 
-## GEOMETRY
+## GEOMETRY (maybe no more so accurate)
 - Extended  Source ending at Z=0
 - Cu collimator on top of Sr source (toggleble)
 - CMOS Detector starting at Z offset (Z distance is from source surface to possible resin in case of sensor 1, or up to the sensor in case of sensor 2, even if with filter)
@@ -45,11 +45,11 @@ RadioActiveDecay	6			210
 eIoni				2			2
 eBrem				2			3
 
-CPU TIMES NEEDED FOR 1e5 PRIMARIES:
+###CPU TIMES NEEDED FOR 1e5 PRIMARIES:
 
 #### To send the sim to FARM:
+from build/
 ```
-(from build)
 rsync -avzh --exclude '*.root' --exclude '*.dat' ../* collamaf@farm-login.roma1.infn.it:NewLife/CMOS/
 
 ```
@@ -57,33 +57,42 @@ rsync -avzh --exclude '*.root' --exclude '*.dat' ../* collamaf@farm-login.roma1.
 
 ## OUTPUT:
 A root file named CMOSmc_{XX}.root is created, reporting the several parameters used for the run, in which on an event (i.e. a primary particle) by event basis it is stored:
-### SOURCE vector (one entry per primary particle):
+
+### SOURCE vector (one entry per primary particle, only first 100k events are written for disk space sake):
 - AllX: X coordinate of primary particle [mm];
 - AllY: Y coordinate of primary particle [mm];
 - AllZ: Z coordinate of primary particle [mm];
-- AllCosX[2]: X directive cosine of produced electron;
-- AllCosY[2]: Y directive cosine of produced electron;
-- AllCosZ[2]: Z directive cosine of produced electron;
-- AllEne[2]: kinetic energy of produced electron [keV];
-- AllIsotope[2]: isotope of primary particle (0=Sr, 1=Y);
-- ExitX: X coordinate of primary particle exiting the source volume [mm]; ("Exiting" means going from source to dummy or from absorber to dummy if there is an absorber)
-- ExitY: Y coordinate of primary particle exiting the source volume [mm];
-- ExitZ: Z coordinate of primary particle exiting the source volume [mm];
-- ExitCosX[2+]: X directive cosine of primary particle exiting the source volume;
-- ExitCosY[2+]: Y directive cosine of primary particle exiting the source volume;
-- ExitCosZ[2+]: Z directive cosine of primary particle exiting the source volume;
-- ExitEne[2+]: kinetic energy of primary particle exiting the source volume [keV];
-- ExitPart[2+]: kind of primary particle (11=e-, -11=e+, 22=gamma, 13=mu-...) exiting the source volume;
-- ExitParentID[2+]: partent-id of particle exiting the source
-- ExitProcess[2+]: process that created the particles that exits the source (see table above)
+- AllCosX[]: X directive cosine of produced electron;
+- AllCosY[]: Y directive cosine of produced electron;
+- AllCosZ[]: Z directive cosine of produced electron;
+- AllEne[]: kinetic energy of produced particle  [keV];
+- AllIsotope[]: parentID - 1 of track: so for example for Sr source is 0 if track is son of Sr, 1 if of Y;
+- ExitX[]: X coordinate of primary particle exiting the source volume [mm]; ("Exiting" means going from source to dummy or from absorber to dummy if there is an absorber)
+- ExitY[]: Y coordinate of primary particle exiting the source volume [mm];
+- ExitZ[]: Z coordinate of primary particle exiting the source volume [mm];
+- ExitCosX[]: X directive cosine of primary particle exiting the source volume;
+- ExitCosY[]: Y directive cosine of primary particle exiting the source volume;
+- ExitCosZ[]: Z directive cosine of primary particle exiting the source volume;
+- ExitEne[]: kinetic energy of primary particle exiting the source volume [keV];
+- ExitPart[]: kind of primary particle (11=e-, -11=e+, 22=gamma, 13=mu-...) exiting the source volume;
+- ExitParentID[]: partent-id of particle exiting the source
+- ExitProcess[]: process that created the particles that exits the source (see table above)
 - ExitTrackN: number of different tracks exiting the source per event
 
-### B1 vector (one entry per primary particle that gives a >0 energy deposition):
+### B1 vector (one entry per primary particle):
 - Eabs: energy absorbed in CMOS [keV];
 - EAbsComp[2]: vector containing energy absorbed in CMOS [keV] due to Sr (comp 1) and to Y (comp 2)
+- PreFilterTrackN: number of tracks entering the Filter (if present, empty otherwise);
+- PreFilterPart: kind of particle entering the Filter (if present, empty otherwise);
+- PreFilterEn: energy of particle entering the Filter (if present, empty otherwise);
 - PreCmosTrackN: number of tracks entering Cmos per primary (from front resin) (it's the length of the following vector);
-- PreCmosPart[PreCmosTrackN]: kind of particle of each track entering Cmos(from front resin);
+- PreCmosPart[PreCmosTrackN]: kind of particle of each track entering Cmos (from front resin);
 - PreCmosEn[PreCmosTrackN]: kinetic energy of particle of each tracks entering Cmos (from front resin) [keV];
+- PreCmosX[PreCmosTrackN]: x position of each tracks entering Cmos (from front resin) [mm];
+- PreCmosY[PreCmosTrackN]: y position of each tracks entering Cmos (from front resin) [mm];
+- PreCmosZ[PreCmosTrackN]: z position of each tracks entering Cmos (from front resin) [mm];
+- PreCmosEnPrim[PreCmosTrackN]: energy of the primary particle that originated the track that is now entering CMOS (from front resin) [keV];
+- PreCmosEventNum[PreCmosTrackN]: number of times that the event of the primary particle that originated the track that is now entering CMOS (from front resin)  gave a track entering CMOS (useful to check for double countings) ;
 - InCmosTrackN: number of hits inside Cmos (it's the length of the following vector);
 - InCmosPart[InCmosTrackN]: kind of particle of hit inside Cmos;
 - InCmosEn[InCmosTrackN]: energy deposit of single hit of particle inside Cmos;
@@ -98,18 +107,19 @@ A root file named CMOSmc_{XX}.root is created, reporting the several parameters 
 - SourceX: X coordinate of primary particle (isotope) giving a signal in Cmos [mm];
 - SourceY: Y coordinate of primary particle (isotope) giving a signal in Cmos [mm];
 - SourceZ: Z coordinate of primary particle (isotope) giving a signal in Cmos [mm];
-- SourceCosX[2]: X directive cosine of decay electron(s) giving a signal in Cmos;
-- SourceCosY[2]: Y directive cosine of  decay electron(s) giving a signal in Cmos;
-- SourceCosZ[2]: Z directive cosine of decay electron(s) giving a signal in Cmos;
-- SourceEne[2]: kinetic energy of  decay electron(s)  giving a signal in Cmos [keV];
-- SourceIsotope: isotope of primary particle (0=Sr, 1=Y) giving a signal in Cmos;
+- SourceCosX[]: X directive cosine of decay electron(s) giving a signal in Cmos;
+- SourceCosY[]: Y directive cosine of  decay electron(s) giving a signal in Cmos;
+- SourceCosZ[]: Z directive cosine of decay electron(s) giving a signal in Cmos;
+- SourceEne[]: kinetic energy of produced particle  [keV];
+- SourceIsotope: parentID - 1 of track: so for example for Sr source is 0 if track is son of Sr, 1 if of Y;
 - Nev: storing number of events generated
 
 
+For example, to see energy spectrum of electrons created by Sr/Y that exit the source
 ```
 Source->Draw("ExitEne","ExitPart==11&&ExitProcess==6")
 ```
-to see energy spectrum of electrons created by Sr/Y that exit the source
+
 
 ## Pass The MC output to data-analysis algorithm
 
@@ -135,19 +145,16 @@ cd /build/
 
 ### GammaFilter
 ```
-
  .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z44_NoAbs_Fil1_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
  ```
 
 ### GammaNoFilter
  ```
-
 .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_N10000000_Frame1800_Analized",2)
 ```
 
 ### LowEneGammaNoFilter
 ```
-
 .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatGamma_115_PxT175_LowEne_N10000000_Frame1800_Analized",3)
 ```
 
@@ -165,9 +172,6 @@ cd /build/
 ```
 .X CreaEff.C("../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000","../build/CMOSmc_X0_Z1_NoAbs_Fil0_FlatEle_115_PxT175_N10000000_Frame1800_Analized",1)
 ```
-
-
-
 
 
 
@@ -251,8 +255,5 @@ cd /build/
 
 
 ## TO DO's
-
-- correct readme regarding Root file vectors
-- sistemare il fatto che con sourceselect=4 per qualche motivo piazza quella di Y.. insomma rivedere come DetCos piazza le sorgenti
 
 

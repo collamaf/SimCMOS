@@ -74,6 +74,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	
 	G4bool newDebug = false;
 	
+#pragma mark What Enters CMOS
 	// ###########################################################################
 	// ###################### ENTERING CMOS
 	
@@ -121,7 +122,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 	// ###################### END ENTERING CMOS
 	// ###########################################################################
 	
-	
+#pragma mark What Enters Filter
+
 	// ###########################################################################
 	// ###################### ENTERING FILTER
 	
