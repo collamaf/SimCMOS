@@ -11,7 +11,7 @@ make
 ./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 
 ```
-Source Choice:
+### Source Choice:\\
 1 - Pointlike Sr
 2 - Extended Sr
 3 - ExtY
@@ -23,7 +23,7 @@ Source Choice:
 9 - Flat Gamma 0-1MeV
 10 - Na22 "nude" (PG)
 
-Sensor Choice:
+### Sensor Choice:
 1 - MT9V011
 2 - MT9V115
 3 - bare 60035 SiPm
