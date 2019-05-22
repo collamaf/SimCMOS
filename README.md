@@ -11,16 +11,16 @@ make
 ./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 
 ```
-### Source Choice:\\
-1 - Pointlike Sr
-2 - Extended Sr
-3 - ExtY
-4 - Co60
-5 - Na22
-6 - Ba133
-7 - Cs137
-8 - Flat Ele 0-3MeV
-9 - Flat Gamma 0-1MeV
+### Source Choice:\
+1 - Pointlike Sr\
+2 - Extended Sr\
+3 - ExtY\
+4 - Co60\
+5 - Na22\
+6 - Ba133\
+7 - Cs137\
+8 - Flat Ele 0-3MeV\
+9 - Flat Gamma 0-1MeV\
 10 - Na22 "nude" (PG)
 
 ### Sensor Choice:
