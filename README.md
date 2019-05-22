@@ -24,8 +24,8 @@ make
 10 - Na22 "nude" (PG)
 
 ### Sensor Choice:
-1 - MT9V011
-2 - MT9V115
+1 - MT9V011\
+2 - MT9V115\
 3 - bare 60035 SiPm
 
 
