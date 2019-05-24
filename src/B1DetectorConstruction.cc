@@ -327,7 +327,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 		Resin_sizeZ  = 0.520*mm;
 		DistFilterCmos=0;
 		Z_resin= fZValue-DistFilterCmos + Resin_sizeZ*0.5- DummyCmos_sizeZ;
-		cmos_ZScan=fZValue + Resin_sizeZ + Cmos_sizeZ*0.5; //modified on 2017.11.21 by collamaf - Z distance does not take into account Cu thickness! is always from source top to possible resin
+		cmos_ZScan=fZValue  + Cmos_sizeZ*0.5; //modified on 2017.11.21 by collamaf - Z distance does not take into account Cu thickness! is always from source top to possible resin - modified on 2019.05.24 by collamaf: also for sensor 1 distance is always from source top to CMOS (disregarding possible filter)
 	} else if (fSensorChoice==2) {
 		Resin_sizeX=2.69*mm;
 		Resin_sizeY=2.69*mm;

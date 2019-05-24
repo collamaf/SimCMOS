@@ -11,7 +11,7 @@ make
 ./exampleB1 -AbsD -1 -Z 0.445 -Fil 1 -Source 8 -Sensor 2 -PixT 1.75 -NPrim 1000000
 
 ```
-### Source Choice:\
+### Source Choice:
 1 - Pointlike Sr\
 2 - Extended Sr\
 3 - ExtY\
@@ -45,7 +45,7 @@ RadioActiveDecay	6			210
 eIoni				2			2
 eBrem				2			3
 
-###CPU TIMES NEEDED FOR 1e5 PRIMARIES:
+### CPU TIMES NEEDED FOR 1e5 PRIMARIES:
 
 #### To send the sim to FARM:
 from build/
